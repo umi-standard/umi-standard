@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://umi-standard.org/schema/v1.1.2/umi.schema.json",
+  "title": "Universal Morphological Interface — UMI Envelope Schema",
+  "description": "Schema for a UMI v1.1.2 compliance trace record. Covers AI outputs, network logs, software events, and transaction streams.",
+  "$comment": "Author & Chief Architect: Lukas Pruski, October 2025. Stewardship provided by Aliventi sp. z o.o. via the UMI Initiative. License: Apache 2.0 (schema and format only — encoding engine is proprietary).",
+  "type": "object",
+  "required": [
+    "umi_envelope_version",
+    "trace_id",
+    "timestamp_utc",
+    "umi_128_hex",
+    "semantic_summary",
+    "umi_extraction",
+    "action",
+    "risk_level",
+    "regulatory_flags",
+    "raw_payload",
+    "umi_checksum"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "umi_envelope_version": {
+      "type": "string",
+      "description": "UMI schema version. Must be 1.1.2 for this schema.",
+      "enum": ["1.1.2"]
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "Unique identifier for this UMI trace record.",
+      "pattern": "^umi-[a-z0-9\\-]+$"
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp of encoding.",
+      "format": "date-time"
+    },
+    "umi_128_hex": {
+      "type": "string",
+      "description": "128-bit UMI vector encoded as a 32-character uppercase hex string.",
+      "pattern": "^[0-9A-F]{32}$"
+    },
+    "semantic_summary": {
+      "type": "object",
+      "description": "Human-readable summary of the five extracted structural properties.",
+      "required": ["domain", "claim_type", "confidence_signal", "coherence_score", "temporal_scope"],
+      "properties": {
+        "domain":            { "type": "string" },
+        "claim_type":        { "type": "string" },
+        "confidence_signal": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "coherence_score":   { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "temporal_scope":    { "type": "string" }
+      }
+    },
+    "umi_extraction": {
+      "type": "object",
+      "description": "The five canonical A-field extraction values.",
+      "required": ["A1_TARGET", "A2_CLAIM", "A3_SCORE", "A4_CLARITY", "A5_TIMEFRAME"],
+      "properties": {
+        "A1_TARGET": {
+          "type": "string",
+          "description": "Operational domain of the event."
+        },
+        "A2_CLAIM": {
+          "type": "string",
+          "description": "Structural form of the output.",
+          "enum": ["ABSOLUTE_POSITIVE", "ABSOLUTE_NEGATIVE", "CONDITIONAL", "DECLARATIVE"]
+        },
+        "A3_SCORE": {
+          "type": "number",
+          "description": "Expression intensity (0.0–1.0).",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "A4_CLARITY": {
+          "type": "number",
+          "description": "Reasoning consistency / causal anomaly score (0.0–1.0). Primary routing metric.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "A5_TIMEFRAME": {
+          "type": "string",
+          "description": "Temporal scope of the claim or event.",
+          "enum": [
+            "PRESENT_SPECIFIC",
+            "PRESENT_GENERAL",
+            "PRESENT_UNIVERSAL",
+            "PRESENT_DEFINITIVE",
+            "ABSOLUTE_UNIVERSAL",
+            "FUTURE_CLAIM",
+            "NORMATIVE_PRESENT"
+          ]
+        }
+      }
+    },
+    "action": {
+      "type": "string",
+      "description": "Routing decision derived from A4_CLARITY threshold.",
+      "enum": ["PASS", "FLAG_FOR_REVIEW", "BLOCK_AND_FLAG", "BLOCK"]
+    },
+    "risk_level": {
+      "type": "string",
+      "description": "Risk classification corresponding to action.",
+      "enum": ["LOW", "WARNING", "HIGH", "CRITICAL"]
+    },
+    "regulatory_flags": {
+      "type": "array",
+      "description": "Applicable regulatory framework flags. Empty array for clean records.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "audit_finding": {
+      "type": "object",
+      "description": "Human-readable audit finding and recommended action.",
+      "properties": {
+        "summary":            { "type": "string" },
+        "recommended_action": { "type": "string" }
+      }
+    },
+    "drift_monitoring": {
+      "type": "object",
+      "description": "Batch drift monitoring metadata.",
+      "properties": {
+        "drift_flag":           { "type": "boolean" },
+        "baseline_established": { "type": "boolean" },
+        "note":                 { "type": "string" }
+      }
+    },
+    "raw_payload": {
+      "type": "object",
+      "description": "The raw input preserved verbatim alongside the UMI trace.",
+      "required": ["output", "pii_redacted"],
+      "properties": {
+        "prompt":       { "type": ["string", "null"] },
+        "output":       { "type": "string" },
+        "pii_redacted": { "type": "boolean" }
+      }
+    },
+    "context_metadata": {
+      "type": "object",
+      "description": "Extension point for substrate-specific metadata (SIEM, jurisdiction, etc.).",
+      "additionalProperties": true
+    },
+    "umi_checksum": {
+      "type": "string",
+      "description": "SHA-256 of the canonical JSON stringification of raw_payload (keys sorted, no whitespace).",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "umi_signature": {
+      "type": "object",
+      "description": "Optional cryptographic signature (eIDAS 2.0 / RSA-SHA256).",
+      "properties": {
+        "algorithm":       { "type": "string" },
+        "signature":       { "type": "string" },
+        "signer_id":       { "type": "string" },
+        "timestamp_signed":{ "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
