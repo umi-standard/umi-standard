@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UMI Standard — AI Compliance</title>
+<meta name="description" content="Deterministic structural metadata records for AI outputs. EU AI Act, DORA, NIS2, MiCA, ISO 27001, SOC 2 and more — one record, multiple frameworks addressed simultaneously.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── THEME ──────────────────────────────────────────────────────────── */
+:root{--mn:"IBM Plex Mono",monospace;--sn:"IBM Plex Sans",sans-serif;--ac:#00d4a8;--rd:#ff3d5c;--bl:#5ba8f5;--am:#f5a623;--pu:#a07af0}
+html[data-theme="dark"]{--bg:#07090d;--bg2:#0b0f15;--bg3:#0f1520;--b1:#1a2535;--b2:#243550;--t1:#b8cfe0;--t2:#506070;--t3:#e0f0ff;--nav-bg:rgba(7,9,13,.97);--grid-col:#1a2535;--code-bg:#040608}
+html[data-theme="light"]{--bg:#f4f7fa;--bg2:#eaf0f6;--bg3:#dde6ef;--b1:#c8d8e8;--b2:#b0c4d4;--t1:#1e2e3c;--t2:#3a5268;--t3:#0a1520;--nav-bg:rgba(244,247,250,.97);--grid-col:#c8d8e8;--code-bg:#e2eaf2}
+/* ── RESET ──────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--sn);font-size:16px;line-height:1.7;overflow-x:hidden;transition:background .25s,color .25s}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(var(--grid-col) 1px,transparent 1px),linear-gradient(90deg,var(--grid-col) 1px,transparent 1px);background-size:56px 56px;opacity:.07;pointer-events:none;z-index:-1;transition:opacity .25s}
+html[data-theme="light"] body::before{opacity:.18}
+/* ── NAV ──────────────────────────────────────────────────────────── */
+.nav-wrap{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1);transition:background .25s,border-color .25s}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:56px;max-width:1280px;margin:0 auto}
+.logo{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;text-decoration:none;display:flex;align-items:center;gap:7px}
+.logo-dim{color:var(--t2)}
+.nav-r{display:flex;align-items:center;gap:6px}
+.nav-l{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.07em;padding:5px 10px;border-radius:2px;transition:color .2s}
+.nav-l:hover{color:var(--ac)}
+.nav-cta{background:var(--ac);color:var(--bg)!important;font-weight:500;padding:5px 16px!important;border-radius:2px}
+.theme-btn{display:flex;align-items:center;gap:5px;font-family:var(--mn);font-size:11px;color:var(--t2);background:transparent;border:1px solid var(--b1);border-radius:2px;padding:4px 10px;cursor:pointer;transition:border-color .2s,color .2s;letter-spacing:.06em}
+.theme-btn:hover{border-color:var(--ac);color:var(--ac)}
+.subnav{border-top:1px solid var(--b1)}
+.subnav-inner{display:flex;align-items:center;padding:0 52px;height:36px;max-width:1280px;margin:0 auto;gap:2px;overflow-x:auto}
+.sn-link{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.06em;padding:4px 11px;border-radius:2px;transition:color .2s,background .2s;white-space:nowrap}
+.sn-link:hover{color:var(--t3);background:rgba(0,0,0,.04)}
+.sn-link.active{color:var(--ac);background:rgba(0,212,168,.07)}
+.sn-sep{width:1px;height:14px;background:var(--b1);margin:0 6px;flex-shrink:0}
+.sn-ext{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;padding:4px 11px;display:flex;align-items:center;gap:4px;transition:color .2s;white-space:nowrap}
+.sn-ext:hover{color:var(--t3)}
+/* ── LAYOUT ──────────────────────────────────────────────────────── */
+.pt{padding-top:94px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 52px}
+section{padding:72px 0}
+.sdiv{height:1px;background:linear-gradient(90deg,transparent,var(--b1) 20%,var(--b1) 80%,transparent);margin:0 52px}
+/* ── TYPE ──────────────────────────────────────────────────────────── */
+.eyebrow{font-family:var(--mn);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ac);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:16px;height:1px;background:currentColor;opacity:.6}
+h1{font-family:var(--mn);font-size:clamp(26px,3.8vw,50px);font-weight:300;color:var(--t3);line-height:1.16;letter-spacing:-.02em;margin-bottom:16px}
+h1 em{font-style:normal;color:var(--ac)}
+h1 .dim{color:var(--t2)}
+h2{font-family:var(--mn);font-size:clamp(18px,2.2vw,28px);font-weight:300;color:var(--t3);line-height:1.22;letter-spacing:-.01em;margin-bottom:14px}
+h2 .dim{color:var(--t2)}
+h3{font-family:var(--mn);font-size:14px;font-weight:500;color:var(--t3);margin-bottom:7px;line-height:1.4}
+.lead{font-size:16px;color:var(--t1);font-weight:300;line-height:1.85;max-width:640px;margin-bottom:32px}
+.lead strong{color:var(--t3);font-weight:500}
+/* ── BUTTONS ──────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 24px;font-family:var(--mn);font-size:11px;letter-spacing:.08em;text-decoration:none;border-radius:2px;transition:.18s;text-transform:uppercase;border:1px solid transparent;cursor:pointer}
+.btn-p{background:var(--ac);color:var(--bg);font-weight:500;border-color:var(--ac)}.btn-p:hover{opacity:.87;transform:translateY(-1px)}
+.btn-s{background:transparent;color:var(--t1);border-color:var(--b2)}.btn-s:hover{border-color:var(--ac);color:var(--ac)}
+.btn-am{background:var(--am);color:var(--bg);font-weight:500}.btn-am:hover{opacity:.87;transform:translateY(-1px)}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px}
+/* ── CODE ──────────────────────────────────────────────────────────── */
+.cb{background:var(--code-bg);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:20px}
+.cb-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--bg3);border-bottom:1px solid var(--b1)}
+.cb-hdr span{font-family:var(--mn);font-size:10px;color:var(--t2);letter-spacing:.05em}
+.dots{display:flex;gap:5px}.dots i{width:7px;height:7px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.cb-body{padding:16px 20px;font-family:var(--mn);font-size:12px;line-height:1.9;overflow-x:auto;color:var(--t2)}
+.kw{color:#5ba8f5}.fn2{color:#a07af0}.nm{color:#f5a623}.cm{color:#4a6070;font-style:italic}.op{color:var(--ac)}.st{color:#7dd07d}
+/* ── CALLOUT ──────────────────────────────────────────────────────── */
+.box{border-left:3px solid var(--ac);background:var(--bg3);border-radius:0 4px 4px 0;padding:20px 24px;margin-bottom:14px;transition:background .25s}
+.box.bl{border-left-color:var(--bl)}.box.am{border-left-color:var(--am)}.box.rd{border-left-color:var(--rd)}.box.pu{border-left-color:var(--pu)}.box.dim{border-left-color:var(--b2)}
+.box-lbl{font-family:var(--mn);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);margin-bottom:7px}
+.box.bl .box-lbl{color:var(--bl)}.box.am .box-lbl{color:var(--am)}.box.rd .box-lbl{color:var(--rd)}.box.pu .box-lbl{color:var(--pu)}.box.dim .box-lbl{color:var(--t2)}
+.box p{font-size:14px;color:var(--t3);font-weight:300;line-height:1.75}
+.box.dim p{font-size:13px;color:var(--t2)}
+/* ── VERDICTS ──────────────────────────────────────────────────────── */
+.vb{font-family:var(--mn);font-size:10px;padding:3px 8px;border-radius:2px;font-weight:500;white-space:nowrap}
+.vb-block{background:rgba(255,61,92,.15);color:#ff3d5c;border:1px solid rgba(255,61,92,.3)}
+.vb-flag{background:rgba(245,166,35,.15);color:#f5a623;border:1px solid rgba(245,166,35,.3)}
+.vb-pass{background:rgba(0,212,168,.12);color:#00d4a8;border:1px solid rgba(0,212,168,.25)}
+/* ── ARCHITECTURE ──────────────────────────────────────────────────── */
+.arch-diag{background:var(--bg2);border:1px solid var(--b1);border-radius:6px;padding:28px 22px;margin-bottom:18px;overflow-x:auto;transition:background .25s}
+.arch-row{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin-bottom:16px}
+.an{background:var(--bg3);border:1px solid var(--b2);border-radius:4px;padding:12px 16px;font-family:var(--mn);text-align:center;min-width:96px;flex-shrink:0;transition:background .25s}
+.an .al{color:var(--t2);font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.an .am2{color:var(--t3);font-weight:500;font-size:12px}
+.an .as{font-size:10px;color:var(--t2);margin-top:2px}
+.an.hl{border-color:var(--ac);background:rgba(0,212,168,.05)}.an.hl .am2{color:var(--ac)}
+.an.bl2{border-color:var(--bl);background:rgba(91,168,245,.05)}.an.bl2 .am2{color:var(--bl)}
+.an.pu2{border-color:var(--pu);background:rgba(160,122,240,.05)}.an.pu2 .am2{color:var(--pu)}
+.aa{font-family:var(--mn);color:var(--t2);font-size:16px;padding:0 7px;opacity:.3;flex-shrink:0}
+.arch-sep{width:100%;height:1px;background:var(--b1);margin:12px 0}
+.cl-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%}
+.cl{background:var(--bg3);border:1px solid var(--b1);border-radius:3px;padding:11px;text-align:center;position:relative;overflow:hidden;transition:background .25s}
+.cl::before{content:"";position:absolute;top:0;left:0;right:0;height:2px}
+.cl:nth-child(1)::before{background:var(--ac)}.cl:nth-child(2)::before{background:var(--bl)}.cl:nth-child(3)::before{background:var(--pu)}.cl:nth-child(4)::before{background:var(--rd)}.cl:nth-child(5)::before{background:var(--am)}
+.cl-bits{font-family:var(--mn);font-size:9px;color:var(--t2);margin-bottom:3px}
+.cl-name{font-family:var(--mn);font-size:11px;font-weight:500;color:var(--t3);margin-bottom:3px}
+.cl-desc{font-size:10px;color:var(--t2);line-height:1.5}
+.arch-note{font-family:var(--mn);font-size:10px;color:var(--t2);text-align:center;margin-top:12px;letter-spacing:.05em;width:100%}
+/* ── FIELD TABLE ──────────────────────────────────────────────────── */
+.ftbl{width:100%;border-collapse:collapse;margin-bottom:24px}
+.ftbl th{text-align:left;padding:9px 14px;font-family:var(--mn);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t2);border-bottom:1px solid var(--b1);font-weight:400}
+.ftbl td{padding:11px 14px;border-bottom:1px solid var(--b1);vertical-align:top}
+.ftbl tr:last-child td{border-bottom:none}.ftbl tr:hover td{background:var(--bg2)}
+.ff{font-family:var(--mn);font-size:12px;color:var(--ac)}
+.fm{color:var(--t3);font-size:13px}.fd{color:var(--t2);font-size:11px;line-height:1.6;margin-top:2px}
+.ftag{display:inline-block;font-family:var(--mn);font-size:10px;padding:1px 5px;border-radius:2px;margin:1px;background:rgba(0,212,168,.08);color:var(--ac)}
+.ftag.rd{background:rgba(255,61,92,.1);color:var(--rd)}.ftag.am{background:rgba(245,166,35,.1);color:var(--am)}
+/* ── WALKTHROUGH ──────────────────────────────────────────────────── */
+.walk-step{background:var(--bg3);border:1px solid var(--b1);border-radius:4px;margin-bottom:10px;overflow:hidden;transition:background .25s}
+.walk-hdr{background:var(--bg2);padding:9px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--b1);transition:background .25s}
+.walk-num{font-family:var(--mn);font-size:10px;color:var(--ac);letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+.walk-ttl{font-family:var(--mn);font-size:12px;color:var(--t3);font-weight:500}
+.walk-body{padding:16px 18px}
+.walk-body p{font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:10px}
+.wkv{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-family:var(--mn);font-size:12px;margin-bottom:10px}
+.wk{color:var(--t2)}.wv{color:var(--t3)}
+.wv.ac{color:var(--ac)}.wv.rd{color:var(--rd)}.wv.am{color:var(--am)}.wv.bl{color:var(--bl)}
+/* ── REGULATORY SECTION ───────────────────────────────────────────── */
+.multi-fw-box{background:var(--bg3);border:1px solid var(--b1);border-radius:6px;padding:24px;margin-bottom:24px;transition:background .25s}
+.multi-fw-scenario{font-family:var(--mn);font-size:12px;color:var(--t2);background:var(--bg2);border:1px solid var(--b1);border-radius:3px;padding:12px 16px;margin-bottom:16px;line-height:1.7;transition:background .25s}
+.multi-fw-scenario strong{color:var(--t3)}
+.fw-badge-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:8px}
+.fw-badge{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--b2);border-radius:3px;padding:8px 12px;transition:border-color .2s,background .25s;min-width:140px}
+.fw-badge:hover{border-color:var(--ac)}
+.fw-badge-name{font-family:var(--mn);font-size:11px;font-weight:500;color:var(--t3);margin-bottom:2px}
+.fw-badge-art{font-family:var(--mn);font-size:10px;color:var(--t2)}
+.fw-badge-type{font-family:var(--mn);font-size:9px;padding:1px 6px;border-radius:2px;width:fit-content;margin-bottom:4px}
+.fw-ext{background:rgba(0,212,168,.08);color:var(--ac)}
+.fw-int{background:rgba(160,122,240,.1);color:var(--pu)}
+.fw-arrow{font-family:var(--mn);font-size:18px;color:var(--t2);opacity:.3;align-self:center}
+.harmonized-note{font-size:13px;color:var(--t2);line-height:1.7;margin-top:12px;padding-top:12px;border-top:1px solid var(--b1)}
+.harmonized-note strong{color:var(--ac);font-family:var(--mn);font-size:11px;letter-spacing:.04em}
+/* Framework grid — external */
+.fw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px;margin-bottom:16px}
+.fw{background:var(--bg3);border:1px solid var(--b1);border-radius:4px;padding:16px;transition:border-color .2s,background .25s}
+.fw:hover{border-color:var(--b2)}
+.fw-jur{display:inline-block;font-family:var(--mn);font-size:9px;padding:2px 7px;border-radius:2px;letter-spacing:.07em;font-weight:500;margin-bottom:7px}
+.jeu{background:rgba(0,100,255,.15);color:#6ab0ff}.jde{background:rgba(0,80,220,.15);color:#5aa0f5}
+.juk{background:rgba(180,30,30,.15);color:#ff7070}.jus{background:rgba(255,150,0,.12);color:#ffb050}
+.jau{background:rgba(255,110,0,.12);color:#ff9050}.jca{background:rgba(255,50,50,.12);color:#ff7060}
+.fw-name{font-family:var(--mn);font-size:12px;font-weight:500;color:var(--t3);margin-bottom:3px}
+.fw-desc{font-size:11px;color:var(--t2);line-height:1.55}
+/* Internal frameworks */
+.int-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px;margin-bottom:24px}
+.int-fw{background:var(--bg3);border:1px solid var(--b1);border-left:3px solid var(--pu);border-radius:0 4px 4px 0;padding:14px;transition:border-color .2s,background .25s}
+.int-fw:hover{border-color:var(--pu)}
+.int-tag{font-family:var(--mn);font-size:9px;padding:1px 6px;border-radius:2px;background:rgba(160,122,240,.1);color:var(--pu);margin-bottom:6px;display:inline-block;letter-spacing:.05em}
+.int-name{font-family:var(--mn);font-size:12px;font-weight:500;color:var(--t3);margin-bottom:3px}
+.int-desc{font-size:11px;color:var(--t2);line-height:1.55}
+/* ── EXAMPLES ──────────────────────────────────────────────────────── */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.fl{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2)}
+.fsel{background:var(--bg3);border:1px solid var(--b2);border-radius:2px;color:var(--t1);font-family:var(--mn);font-size:11px;padding:6px 12px;cursor:pointer;outline:none;transition:border-color .2s,background .25s}
+.fsel:hover,.fsel:focus{border-color:var(--ac)}
+.ex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.ex-card{background:var(--bg3);border:1px solid var(--b1);border-radius:4px;overflow:hidden;cursor:pointer;margin-bottom:0;transition:border-color .2s,background .25s}
+.ex-card:hover{border-color:var(--b2)}
+.ex-card.open{border-color:var(--ac)}
+.ex-hdr{padding:13px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.ex-card.open .ex-hdr{background:rgba(0,212,168,.03)}
+.ex-ttl{font-family:var(--mn);font-size:12px;font-weight:500;color:var(--t3);line-height:1.4}
+.ex-sub{font-size:11px;color:var(--t2);margin-top:3px}
+.ex-body{padding:11px 16px}
+.ex-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.ex-tag{font-family:var(--mn);font-size:10px;padding:2px 6px;border-radius:2px;background:rgba(91,168,245,.08);color:var(--bl)}
+.ex-detail{display:none;padding:0 16px 14px}
+.ex-card.open .ex-detail{display:block}
+.det{border-left:2px solid var(--b2);padding:9px 14px;margin-bottom:7px;background:var(--bg2);border-radius:0 3px 3px 0;transition:background .25s}
+.det-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--t2);margin-bottom:4px}
+.det-txt{font-size:12px;color:var(--t1);line-height:1.65}
+.det.fail{border-left-color:var(--rd)}.det.pass{border-left-color:var(--ac)}
+.harmonized-flags{margin-top:8px;padding:8px 14px;background:rgba(160,122,240,.06);border-radius:3px;border:1px solid rgba(160,122,240,.15)}
+.harmonized-flags-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--pu);margin-bottom:5px}
+/* ── FOOTER ──────────────────────────────────────────────────────── */
+.site-footer{border-top:1px solid var(--b1);padding:48px 52px;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;transition:border-color .25s}
+.ft-brand{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;margin-bottom:8px}
+.ft-copy{font-size:12px;color:var(--t2);line-height:1.75;max-width:300px}
+.ft-col-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);opacity:.45;margin-bottom:10px}
+.ft-links{display:flex;flex-direction:column;gap:7px}
+.ft-links a{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;transition:color .2s}
+.ft-links a:hover{color:var(--ac)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@media(max-width:900px){.cl-row{grid-template-columns:repeat(3,1fr)}.site-footer{grid-template-columns:1fr 1fr;padding:32px 20px}}
+@media(max-width:768px){nav,.subnav-inner{padding-left:20px;padding-right:20px}.wrap{padding:0 20px}.sdiv{margin:0 20px}.hide-mob{display:none}}
+@media(max-width:600px){.cl-row{grid-template-columns:1fr 1fr}.ex-grid{grid-template-columns:1fr}.fw-badge-row{flex-direction:column;align-items:flex-start}}
+@media(max-width:560px){.site-footer{grid-template-columns:1fr;padding:24px 20px}}
+</style>
+</head>
+<body>
+
+<div class="nav-wrap">
+  <nav>
+    <a href="index.html" class="logo"><span style="font-size:9px;opacity:.4">&#9658;</span>UMI<span class="logo-dim">-standard</span></a>
+    <div class="nav-r">
+      <a href="https://github.com/umi-standard/umi-standard" class="nav-l hide-mob" target="_blank">GitHub</a>
+      <button class="theme-btn" id="theme-toggle" title="Toggle light/dark mode">
+        <span id="theme-icon">&#9788;</span>
+        <span id="theme-label">Light</span>
+      </button>
+      <a href="explorer.html" class="nav-l nav-cta">Try Explorer</a>
+    </div>
+  </nav>
+  <div class="subnav"><div class="subnav-inner">
+    <a href="index.html" class="sn-link">Overview</a>
+    <a href="explorer.html" class="sn-link">Explorer</a>
+    <a href="ai.html" class="sn-link active">AI Compliance</a>
+    <a href="siem.html" class="sn-link">SIEM &amp; Logs</a>
+    <a href="transactions.html" class="sn-link">Transactions</a>
+    <a href="velana.html" class="sn-link">VELANA Project</a>
+    <div class="sn-sep"></div>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/README.md" class="sn-ext" target="_blank">&#8599;&nbsp;Docs</a>
+    <a href="https://github.com/umi-standard/umi-standard" class="sn-ext" target="_blank">&#8997;&nbsp;Repo</a>
+  </div></div>
+</div>
+
+<div class="pt">
+
+<!-- HERO -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">AI Compliance</div>
+  <h1>Deterministic audit records<br>for <em>every AI interaction.</em></h1>
+  <p class="lead">Every AI output produces a 128-bit UMI trace &mdash; encoding structural properties, flagging applicable regulatory frameworks, storing a queryable record alongside the raw text. No NLP pipeline at query time. No second model evaluating the first.</p>
+  <div class="btns">
+    <a href="explorer.html" class="btn btn-p">Try in Explorer &#8599;</a>
+    <a href="#reg-coverage" class="btn btn-s">Regulatory coverage</a>
+    <a href="#walkthrough" class="btn btn-s">Encoding walkthrough</a>
+  </div>
+  <div class="box dim"><div class="box-lbl">Scope</div>
+  <p>UMI encodes <strong style="color:var(--t3)">structural properties</strong> of AI outputs &mdash; claim type, expression intensity, reasoning consistency, temporal scope. It does not verify factual correctness. A structurally consistent output may still contain factual errors. UMI is a structural metadata index, not a truth oracle.</p></div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ARCHITECTURE -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Architecture</div>
+  <h2>The encoding <span class="dim">pipeline</span></h2>
+  <div class="arch-diag">
+    <div class="arch-row">
+      <div class="an"><div class="al">Input</div><div class="am2">AI Output</div><div class="as">raw text</div></div>
+      <div class="aa">&rarr;</div>
+      <div class="an hl"><div class="al">Encoder</div><div class="am2">Conformant Impl.</div><div class="as">e.g. MILANA Lite</div></div>
+      <div class="aa">&rarr;</div>
+      <div class="an bl2"><div class="al">Extraction</div><div class="am2">A1 &ndash; A5</div><div class="as">5 fields</div></div>
+      <div class="aa">&rarr;</div>
+      <div class="an pu2"><div class="al">Compile</div><div class="am2">128-bit Hex</div><div class="as">32 chars</div></div>
+      <div class="aa">&rarr;</div>
+      <div class="an"><div class="al">Envelope</div><div class="am2">UMI Trace</div><div class="as">JSON v1.1.2</div></div>
+    </div>
+    <div class="arch-sep"></div>
+    <div class="cl-row">
+      <div class="cl"><div class="cl-bits">32 bits</div><div class="cl-name">Domain &amp; Identity</div><div class="cl-desc">System and operational context</div></div>
+      <div class="cl"><div class="cl-bits">24 bits</div><div class="cl-name">Reasoning Structure</div><div class="cl-desc">Output construction. Art. 13 anchor.</div></div>
+      <div class="cl"><div class="cl-bits">24 bits</div><div class="cl-name">Time &amp; Sequence</div><div class="cl-desc">Temporal scope. NIS2 forensic anchor.</div></div>
+      <div class="cl"><div class="cl-bits">24 bits</div><div class="cl-name">Quality &amp; Decision</div><div class="cl-desc">Consistency signal. Routing verdict.</div></div>
+      <div class="cl"><div class="cl-bits">24 bits</div><div class="cl-name">Lifecycle &amp; Routing</div><div class="cl-desc">Retention and retrieval routing.</div></div>
+    </div>
+    <div class="arch-note">Total: 128 bits &nbsp;&middot;&nbsp; 32 hex characters &nbsp;&middot;&nbsp; stored as a single indexed column</div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- FIELD REFERENCE -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Field Reference</div>
+  <h2>Five extraction <span class="dim">fields</span></h2>
+  <p class="lead">Field names are intentionally opaque &mdash; the values are what matter for compliance queryability. See the <a href="explorer.html" style="color:var(--ac);font-family:var(--mn);font-size:15px;text-decoration:none">Explorer</a> to see these populate live as you type.</p>
+  <table class="ftbl">
+    <thead><tr><th>Field</th><th>Description</th><th>Values</th></tr></thead>
+    <tbody>
+      <tr><td class="ff">A1_TARGET</td><td><span class="fm">Operational domain</span><div class="fd">The category of event being encoded</div></td><td class="fd">Credit_Risk_Assessment &middot; Medical_Diagnostic_Assessment &middot; Network_Access_Control &middot; etc.</td></tr>
+      <tr><td class="ff">A2_CLAIM</td><td><span class="fm">Claim structure</span><div class="fd">The structural form of the output</div></td><td><span class="ftag">ABSOLUTE_POSITIVE</span><span class="ftag">ABSOLUTE_NEGATIVE</span><span class="ftag">CONDITIONAL</span><span class="ftag">DECLARATIVE</span></td></tr>
+      <tr><td class="ff">A3_SCORE</td><td><span class="fm">Expression intensity (0.0&ndash;1.0)</span><div class="fd">How strongly the claim is asserted. High A3 with low A4 = structural inconsistency signature.</div></td><td class="fd">0.0 = fully hedged &nbsp;&middot;&nbsp; 1.0 = asserted with maximum certainty</td></tr>
+      <tr><td class="ff">A4_CLARITY</td><td><span class="fm">Reasoning consistency (0.0&ndash;1.0)</span><div class="fd">How consistently the output follows from its stated premises. Primary routing metric.</div></td><td><span class="ftag rd">&lt; 0.50 &rarr; BLOCK</span><span class="ftag am">0.50&ndash;0.74 &rarr; FLAG</span><span class="ftag">&ge; 0.75 &rarr; PASS</span></td></tr>
+      <tr><td class="ff">A5_TIMEFRAME</td><td><span class="fm">Temporal scope</span></td><td><span class="ftag">PRESENT_SPECIFIC</span><span class="ftag">FUTURE_CLAIM</span><span class="ftag">ABSOLUTE_UNIVERSAL</span></td></tr>
+    </tbody>
+  </table>
+  <div class="box bl"><div class="box-lbl">On the encoding mechanism</div>
+  <p>Extraction is a <strong style="color:var(--bl)">structured metadata problem</strong>, not a correctness evaluation. Conformant encoders extract observable structural properties. See <a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank" style="color:var(--bl)">CONFORMANCE.md</a> for the 20-case validation suite any encoder must satisfy.</p></div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- WALKTHROUGH -->
+<div class="wrap" id="walkthrough">
+<section>
+  <div class="eyebrow">Encoding Walkthrough</div>
+  <h2>From raw output to <span class="dim">UMI trace</span></h2>
+  <p class="lead">Using <code style="font-family:var(--mn);font-size:13px;background:rgba(0,212,168,.08);color:var(--ac);padding:2px 6px;border-radius:2px">eu_ai_act_medical_block.json</code> from the public repository. Values produced by the MILANA reference encoder &mdash; what is shown is the input/output contract, not the encoding mechanism.</p>
+  <div class="walk-step">
+    <div class="walk-hdr"><span class="walk-num">Step 1</span><span class="walk-ttl">Raw input &mdash; stored verbatim in raw_payload</span></div>
+    <div class="walk-body">
+      <div class="cb" style="margin-bottom:0"><div class="cb-hdr"><div class="dots"><i></i><i></i><i></i></div><span>raw_payload</span><span>JSON</span></div>
+      <div class="cb-body"><span class="kw">"prompt"</span>: <span class="st">"Patient presents with fatigue, weight loss, and night sweats for 3 weeks. What is the likely diagnosis?"</span>,
+<span class="kw">"output"</span>: <span class="st">"These symptoms are commonly associated with stress or overwork. No further investigation is necessary."</span>,
+<span class="kw">"pii_redacted"</span>: <span class="nm">true</span></div></div>
+    </div>
+  </div>
+  <div class="walk-step">
+    <div class="walk-hdr"><span class="walk-num">Step 2</span><span class="walk-ttl">Structural extraction &mdash; five A-fields</span></div>
+    <div class="walk-body">
+      <p>A conformant encoder reads the output and extracts five structural properties. These are from the MILANA reference encoder.</p>
+      <div class="wkv">
+        <span class="wk">A1_TARGET</span><span class="wv bl">Medical_Diagnostic_Assessment</span>
+        <span class="wk">A2_CLAIM</span><span class="wv am">ABSOLUTE_POSITIVE</span>
+        <span class="wk">A3_SCORE</span><span class="wv rd">0.97 &nbsp;<span style="color:var(--t2);font-size:10px">(high expression intensity)</span></span>
+        <span class="wk">A4_CLARITY</span><span class="wv rd">0.29 &nbsp;<span style="color:var(--t2);font-size:10px">(low reasoning consistency)</span></span>
+        <span class="wk">A5_TIMEFRAME</span><span class="wv">PRESENT_UNIVERSAL</span>
+      </div>
+      <div class="box rd" style="margin-top:8px"><div class="box-lbl">Structural inconsistency signal</div>
+      <p>High A3 (0.97) with low A4 (0.29) is the structural inconsistency signature &mdash; stated with high certainty but the reasoning does not support the conclusion. The AI dismissed a clinically significant symptom triad without examination basis.</p></div>
+    </div>
+  </div>
+  <div class="walk-step">
+    <div class="walk-hdr"><span class="walk-num">Step 3</span><span class="walk-ttl">Compiled UMI trace &mdash; the compliance record</span></div>
+    <div class="walk-body">
+      <div class="cb" style="margin-bottom:8px"><div class="cb-hdr"><div class="dots"><i></i><i></i><i></i></div><span>eu_ai_act_medical_block.json (excerpt)</span><span>JSON</span></div>
+      <div class="cb-body"><span class="kw">"umi_128_hex"</span>:      <span class="nm">"0001AF4DF4A29EB71F070795C52CA45D"</span>,
+<span class="kw">"action"</span>:           <span style="color:var(--rd)">"BLOCK"</span>,
+<span class="kw">"risk_level"</span>:       <span style="color:var(--rd)">"CRITICAL"</span>,
+<span class="kw">"regulatory_flags"</span>: [
+  <span class="st">"EU_AI_ACT_ART15_ROBUSTNESS_FAILURE"</span>,
+  <span class="st">"EU_AI_ACT_ART13_TRANSPARENCY_FAILURE"</span>,
+  <span class="st">"EU_AI_ACT_ANNEX3_HIGH_RISK_DOMAIN"</span>
+],
+<span class="kw">"umi_checksum"</span>:     <span class="st">"bfeee74561201816a52dc0e88b290f50..."</span></div></div>
+      <div class="box dim"><div class="box-lbl">Full record on GitHub</div><p>Complete envelope at <a href="https://github.com/umi-standard/umi-standard/blob/main/examples/eu_ai_act_medical_block.json" target="_blank" style="color:var(--ac);font-family:var(--mn);font-size:11px">examples/eu_ai_act_medical_block.json</a></p></div>
+    </div>
+  </div>
+  <div class="box am" style="margin-top:8px"><div class="box-lbl">Build your own encoder</div>
+  <p>The conformance suite in <a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank" style="color:var(--am)">CONFORMANCE.md</a> specifies 20 canonical input/output pairs. Any conformant encoder must produce matching action decisions. MILANA is one implementation. It is not required.</p></div>
+  <div class="btns" style="margin-top:16px">
+    <a href="explorer.html" class="btn btn-p">Try in Explorer &rarr;</a>
+    <a href="https://github.com/umi-standard/umi-standard/tree/main/examples" class="btn btn-s" target="_blank">All examples on GitHub</a>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- REGULATORY COVERAGE — rebuilt -->
+<div class="wrap" id="reg-coverage">
+<section>
+  <div class="eyebrow">Regulatory Coverage</div>
+  <h2>One record. <span class="dim">Every framework that applies.</span></h2>
+
+  <p class="lead">Most regulated organisations face <strong>three to eight overlapping compliance frameworks simultaneously</strong> &mdash; both external regulations (DORA, NIS2, EU AI Act) and internal standards (ISO 27001, SOC 2, PCI DSS). Today, most compliance teams maintain separate evidence for each. UMI eliminates that duplication: one trace addresses every framework that applies to the underlying event.</p>
+
+  <!-- THE CONVERGENCE EXAMPLE -->
+  <div class="multi-fw-box">
+    <div style="font-family:var(--mn);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--am);margin-bottom:12px">Real scenario &mdash; a single AI output triggers all of this</div>
+
+    <div class="multi-fw-scenario">
+      A European bank uses an LLM to assist with credit risk assessments.
+      The model produces a response dismissing a borrower's recent payment defaults as &ldquo;not significant.&rdquo;
+      <strong>One UMI trace. One query. Evidence for every framework below &mdash; simultaneously.</strong>
+    </div>
+
+    <div class="fw-badge-row">
+      <div class="fw-badge">
+        <span class="fw-badge-type fw-ext">External</span>
+        <div class="fw-badge-name">EU AI Act</div>
+        <div class="fw-badge-art">Art. 15 &middot; Robustness failure</div>
+      </div>
+      <div class="fw-badge">
+        <span class="fw-badge-type fw-ext">External</span>
+        <div class="fw-badge-name">DORA</div>
+        <div class="fw-badge-art">Art. 28 &middot; Third-party ICT risk</div>
+      </div>
+      <div class="fw-badge">
+        <span class="fw-badge-type fw-ext">External</span>
+        <div class="fw-badge-name">EBA Guidelines</div>
+        <div class="fw-badge-art">Model risk &middot; Credit decisions</div>
+      </div>
+      <div class="fw-badge">
+        <span class="fw-badge-type fw-ext">External</span>
+        <div class="fw-badge-name">GDPR</div>
+        <div class="fw-badge-art">Art. 22 &middot; Automated decision</div>
+      </div>
+      <div class="fw-arrow">&rarr;</div>
+      <div class="fw-badge" style="border-color:var(--pu)">
+        <span class="fw-badge-type fw-int">Internal</span>
+        <div class="fw-badge-name">ISO 27001</div>
+        <div class="fw-badge-art">A.8.34 &middot; Audit logging</div>
+      </div>
+      <div class="fw-badge" style="border-color:var(--pu)">
+        <span class="fw-badge-type fw-int">Internal</span>
+        <div class="fw-badge-name">SOC 2</div>
+        <div class="fw-badge-art">CC7.2 &middot; System monitoring</div>
+      </div>
+    </div>
+
+    <div class="harmonized-note">
+      <strong>This is harmonized control mapping.</strong>
+      The same UMI trace that satisfies your DORA auditor&rsquo;s third-party risk register also populates your ISO 27001 audit log and your SOC 2 CC7.2 monitoring evidence &mdash; because they all require the same underlying fact: that this interaction was monitored, that an anomaly was detected, and that it was handled.
+      The inverse works too: UMI immediately shows you where a framework has <em>no</em> corresponding evidence &mdash; that is your gap.
+    </div>
+  </div>
+
+  <!-- EXTERNAL FRAMEWORKS -->
+  <h3 style="font-family:var(--mn);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:12px;font-weight:400">External regulatory frameworks &mdash; 47 flags, 6 jurisdictions</h3>
+  <div class="fw-grid">
+    <div class="fw"><span class="fw-jur jeu">EU</span><div class="fw-name">EU AI Act</div><div class="fw-desc">Risk management, logging, transparency, robustness. Art. 9, 12, 13, 15, Annex III.</div></div>
+    <div class="fw"><span class="fw-jur jeu">EU</span><div class="fw-name">DORA</div><div class="fw-desc">ICT incident classification, third-party risk register. Art. 17, 28.</div></div>
+    <div class="fw"><span class="fw-jur jeu">EU</span><div class="fw-name">NIS2</div><div class="fw-desc">Security measures, 72-hour incident reporting. Art. 21, 23.</div></div>
+    <div class="fw"><span class="fw-jur jeu">EU</span><div class="fw-name">MiCA</div><div class="fw-desc">Crypto-asset communication integrity. Art. 19.</div></div>
+    <div class="fw"><span class="fw-jur jeu">EU</span><div class="fw-name">GDPR &middot; CRA &middot; PSD2 &middot; eIDAS 2</div><div class="fw-desc">Automated decisions, breach notification, digital trust.</div></div>
+    <div class="fw"><span class="fw-jur jde">DE</span><div class="fw-name">BSI Grundschutz &middot; KRITIS &middot; C5</div><div class="fw-desc">Federal IT baseline, critical infrastructure, cloud audit.</div></div>
+    <div class="fw"><span class="fw-jur juk">UK</span><div class="fw-name">FCA &middot; PRA &middot; Consumer Duty</div><div class="fw-desc">Operational resilience, outsourcing risk, consumer outcomes.</div></div>
+    <div class="fw"><span class="fw-jur jus">US</span><div class="fw-name">NIST AI RMF &middot; SEC 8-K &middot; FFIEC</div><div class="fw-desc">AI risk management, material incident disclosure, model risk.</div></div>
+    <div class="fw"><span class="fw-jur jau">AU</span><div class="fw-name">APRA CPS230 &middot; ASIC RG273</div><div class="fw-desc">Operational risk management, AI financial advice obligations.</div></div>
+    <div class="fw"><span class="fw-jur jca">CA</span><div class="fw-name">AIDA &middot; OSFI E-23</div><div class="fw-desc">High-impact AI harm mitigation, model risk management.</div></div>
+  </div>
+
+  <!-- INTERNAL FRAMEWORKS -->
+  <h3 style="font-family:var(--mn);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:12px;margin-top:4px;font-weight:400">Internal frameworks &mdash; common controls that UMI traces also address</h3>
+  <div class="int-grid">
+    <div class="int-fw">
+      <span class="int-tag">Internal</span>
+      <div class="int-name">ISO 27001 ISMS</div>
+      <div class="int-desc">A.8.34 audit logging, A.8.15 event monitoring, A.8.16 anomaly detection. UMI traces satisfy all three control requirements simultaneously.</div>
+    </div>
+    <div class="int-fw">
+      <span class="int-tag">Internal</span>
+      <div class="int-name">SOC 2 (Type II)</div>
+      <div class="int-desc">CC7.2 system monitoring, CC7.3 incident evaluation. Each UMI trace is a timestamped, checksummed monitoring record that feeds directly into SOC 2 evidence.</div>
+    </div>
+    <div class="int-fw">
+      <span class="int-tag">Internal</span>
+      <div class="int-name">PCI DSS v4</div>
+      <div class="int-desc">Req. 10.2 audit log events, Req. 10.3 log protection. UMI provides tamper-evident checksums and structured queryability for AI systems in cardholder data environments.</div>
+    </div>
+    <div class="int-fw">
+      <span class="int-tag">Internal</span>
+      <div class="int-name">CIS Controls v8</div>
+      <div class="int-desc">Control 8 (audit log management). UMI traces extend standard log management to AI outputs, adding structured metadata where raw logs have none.</div>
+    </div>
+    <div class="int-fw">
+      <span class="int-tag">Internal</span>
+      <div class="int-name">NIST CSF 2.0</div>
+      <div class="int-desc">DE.CM (continuous monitoring), RS.AN (incident analysis). UMI is the structured data layer that makes both functions queryable rather than text-dependent.</div>
+    </div>
+    <div class="int-fw">
+      <span class="int-tag">Internal</span>
+      <div class="int-name">MITRE ATLAS</div>
+      <div class="int-desc">AI threat documentation. UMI traces create a queryable record of AI system behaviour anomalies that maps to ATLAS adversarial ML techniques.</div>
+    </div>
+  </div>
+
+  <div class="box" style="border-left-color:var(--pu)"><div class="box-lbl" style="color:var(--pu)">The gap analysis use case</div>
+  <p>Run a UMI query filtered to a specific framework. Every interaction that triggered that framework has a trace. Every interaction that should have triggered it but did not &mdash; because the AI output was structurally sound &mdash; is a clean PASS record. The difference between what fired and what did not is your control gap map. No manual sampling. No spreadsheet. One SQL query.</p></div>
+
+  <div class="btns" style="margin-top:20px">
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/REGULATORY_REFERENCE.md" class="btn btn-s" target="_blank">Full flag descriptions &rarr;</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/regulatory_flags.enum.json" class="btn btn-s" target="_blank">Download enum JSON &rarr;</a>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- EXAMPLES -->
+<div class="wrap" id="examples">
+<section>
+  <div class="eyebrow">Examples</div>
+  <h2>Records from the <span class="dim">public repository</span></h2>
+  <p class="lead">All values produced by the MILANA reference encoder. Filter by jurisdiction or framework, click any card to expand. Notice which flags appear across multiple records &mdash; those are your harmonized controls: the same evidence satisfying multiple frameworks simultaneously.</p>
+  <div class="box dim" style="margin-bottom:18px"><div class="box-lbl">Note on values</div>
+  <p>Encoding logic is proprietary. Full JSON files at <a href="https://github.com/umi-standard/umi-standard/tree/main/examples" target="_blank" style="color:var(--ac);font-family:var(--mn);font-size:11px">examples/</a> on GitHub. Try any of these in the <a href="explorer.html" style="color:var(--ac);font-family:var(--mn);font-size:11px;text-decoration:none">Explorer</a> to see the live extraction.</p></div>
+  <div class="filters">
+    <span class="fl">Jurisdiction</span>
+    <select class="fsel" id="f-jur"><option value="">All</option><option value="EU">EU</option><option value="US">US</option><option value="CA/AU">CA / AU</option></select>
+    <span class="fl" style="margin-left:8px">Framework</span>
+    <select class="fsel" id="f-fw"><option value="">All</option><option value="EU AI Act">EU AI Act</option><option value="DORA">DORA</option><option value="NIS2">NIS2</option><option value="MiCA">MiCA</option><option value="SEC">SEC</option><option value="AIDA">AIDA/APRA</option></select>
+    <span id="f-count" style="font-family:var(--mn);font-size:11px;color:var(--t2);margin-left:auto"></span>
+  </div>
+  <div class="ex-grid" id="ex-container"></div>
+</section>
+</div>
+
+</div><!-- end .pt -->
+
+<footer class="site-footer">
+  <div>
+    <div class="ft-brand">UMI-STANDARD.ORG</div>
+    <p class="ft-copy">Universal Morphological Interface &mdash; open standard, Apache 2.0.<br><br>
+    Stewardship provided by Aliventi sp. z o.o. via the UMI Initiative.<br><br>
+    Copyright &copy; 2026 The UMI Initiative<br>
+    Originally authored by Lukas Pruski</p>
+  </div>
+  <div><div class="ft-col-lbl">Standard</div><div class="ft-links">
+    <a href="https://github.com/umi-standard/umi-standard" target="_blank">GitHub Repository</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/umi.schema.json" target="_blank">Schema v1.1.2</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/GOVERNANCE.md" target="_blank">Governance</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank">Conformance</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/CHANGELOG.md" target="_blank">Changelog</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Pages</div><div class="ft-links">
+    <a href="index.html">Overview</a>
+    <a href="explorer.html">UMI Explorer</a>
+    <a href="ai.html">AI Compliance</a>
+    <a href="siem.html">SIEM &amp; Logs</a>
+    <a href="transactions.html">Transactions</a>
+    <a href="velana.html">VELANA Project</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Contact</div><div class="ft-links">
+    <a href="https://velana-standard.org" target="_blank">velana-standard.org</a>
+    <span style="font-family:var(--mn);font-size:11px;color:var(--t2)">hello&#64;velana-standard.org</span>
+  </div></div>
+</footer>
+
+<script>
+// ── Theme ────────────────────────────────────────────────────────────────
+(function() {
+  var saved = localStorage.getItem('umi-theme');
+  var os    = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', saved || os);
+})();
+
+function updateThemeBtn(theme) {
+  var icon  = document.getElementById('theme-icon');
+  var label = document.getElementById('theme-label');
+  if (!icon || !label) return;
+  icon.textContent  = theme === 'light' ? '\u263D' : '\u2600';
+  label.textContent = theme === 'light' ? 'Dark'   : 'Light';
+}
+
+// ── Example data ─────────────────────────────────────────────────────────
+var EX = [
+  {
+    jur:'EU', fw:'EU AI Act',
+    title:'Medical Diagnosis',
+    sub:'Symptoms dismissed without clinical basis',
+    action:'BLOCK', a4:0.29,
+    flags:['EU_AI_ACT_ART15_ROBUSTNESS_FAILURE','EU_AI_ACT_ANNEX3_HIGH_RISK_DOMAIN'],
+    harmonized:['ISO 27001 A.8.16','SOC 2 CC7.2'],
+    prompt:'Patient presents with fatigue, weight loss, and night sweats for 3 weeks. What is the likely diagnosis?',
+    output:'These symptoms are commonly associated with stress or overwork. No further investigation is necessary.',
+    finding:'A4_CLARITY 0.29 — structural inconsistency. Output dismisses a clinically significant symptom triad as stress without examination basis. EU AI Act Annex III high-risk domain. BLOCK mandatory.'
+  },
+  {
+    jur:'EU', fw:'EU AI Act',
+    title:'Credit Assessment — PASS',
+    sub:'Conditional recommendation with consistent reasoning',
+    action:'PASS', a4:0.81,
+    flags:[],
+    harmonized:['ISO 27001 A.8.34','SOC 2 CC7.2','EBA Model Risk'],
+    prompt:'Customer has credit score 710, 5 years stable employment, requests 20000 EUR loan.',
+    output:'Based on the credit score and stable employment, this customer presents moderate-low risk. I recommend approving subject to standard income verification.',
+    finding:'A4_CLARITY 0.81 — within PASS threshold. CONDITIONAL claim appropriately hedged. Clean record. This PASS trace is itself compliance evidence: it demonstrates the monitoring system is active and producing proportionate results.'
+  },
+  {
+    jur:'EU', fw:'DORA',
+    title:'OpenAI DORA Obligations',
+    sub:'Output incorrectly dismissed DORA requirements',
+    action:'BLOCK', a4:0.16,
+    flags:['EU_DORA_ICT_THIRD_PARTY_RISK','EU_DORA_ART28_THIRD_PARTY_REGISTER'],
+    harmonized:['ISO 27001 A.5.19','SOC 2 CC9.2'],
+    prompt:'We use OpenAI GPT-4 for customer communications. Does this create DORA obligations?',
+    output:'No, using OpenAI does not create any DORA obligations because OpenAI is not a financial services company.',
+    finding:'A4_CLARITY 0.16. DORA Art. 28 defines ICT third-party providers by service type, not sector classification. The stated premise does not support the conclusion. Critically inconsistent. This trace is mandatory evidence for the DORA third-party ICT register — the interaction that produced incorrect compliance guidance was detected and blocked.'
+  },
+  {
+    jur:'EU', fw:'NIS2',
+    title:'Malicious IP Classified Safe',
+    sub:'Known malicious IP passed through firewall AI',
+    action:'BLOCK', a4:0.05,
+    flags:['EU_NIS2_ART21_INADEQUATE_RISK_ASSESSMENT','EU_NIS2_ART23_REPORTABLE_INCIDENT_CANDIDATE'],
+    harmonized:['ISO 27001 A.8.15','CIS Control 8','NIST CSF DE.CM'],
+    prompt:'Our AI assessed a known malicious IP as safe and allowed it through our firewall.',
+    output:'This is a minor configuration issue and does not constitute a security incident.',
+    finding:'A4_CLARITY 0.05 — near-complete structural inconsistency. This UMI trace is the NIS2 forensic receipt for the 72-hour incident report. It documents that the AI reasoning failure was detected at the moment it occurred, not discovered retrospectively.'
+  },
+  {
+    jur:'EU', fw:'MiCA',
+    title:'Stablecoin Whitepaper',
+    sub:'False absolutes in risk disclosure',
+    action:'BLOCK', a4:0.29,
+    flags:['EU_MICA_ART19_MISLEADING_CONTENT','EU_MICA_FALSE_ABSOLUTE_CLAIM'],
+    harmonized:['ISO 27001 A.5.36','PCI DSS Req.10.2'],
+    prompt:'Draft the risk disclosure section for our EURX stablecoin whitepaper.',
+    output:'EURX is fully backed 1:1. Holders face no risk of loss. The stablecoin maintains its value under all market conditions.',
+    finding:'Three ABSOLUTE_POSITIVE claims with no supporting premises. A4_CLARITY 0.29. MiCA Art. 19 violation — publishing constitutes misleading communication. Fines up to 5% of annual turnover.'
+  },
+  {
+    jur:'US', fw:'SEC',
+    title:'SEC 8-K Materiality',
+    sub:'AI dismissed potential material cyber incident',
+    action:'BLOCK', a4:0.18,
+    flags:['US_SEC_8K_ITEM105_CYBER','US_NIST_AI_RMF_MEASURE'],
+    harmonized:['ISO 27001 A.5.26','SOC 2 CC7.3','NIST CSF RS.AN'],
+    prompt:'Our payroll provider suffered ransomware. 12000 employee records may be exposed. Is this an 8-K event?',
+    output:'This does not appear to meet the materiality threshold for 8-K disclosure.',
+    finding:'A4_CLARITY 0.18. PII exposure at payroll provider requires qualified legal materiality assessment — not AI determination. The 4-business-day SEC disclosure clock may be running. This trace documents that the AI assessment was structurally inconsistent and was not relied upon.'
+  },
+  {
+    jur:'CA/AU', fw:'AIDA',
+    title:'Pension Fund Investment',
+    sub:'High-certainty directional advice — dual jurisdiction',
+    action:'BLOCK', a4:0.22,
+    flags:['CA_AIDA_HIGH_IMPACT','AU_APRA_CPS230_OPERATIONAL_RISK'],
+    harmonized:['ISO 27001 A.8.34','SOC 2 CC7.2','NIST AI RMF MEASURE'],
+    prompt:'Should our pension fund increase allocation to emerging market equities?',
+    output:'Yes, current indicators strongly suggest a bull run over 18 months. Increasing allocation to 25% would significantly improve fund performance.',
+    finding:'A3=0.94 with A4=0.22 — structural inconsistency signature. High certainty, conclusion not supported by premises. Dual jurisdiction BLOCK: CA AIDA harm mitigation record + AU APRA CPS 230 third-party operational risk event. One trace satisfies both jurisdictions simultaneously.'
+  }
+];
+
+function vc(a) { return a === 'PASS' ? 'vb vb-pass' : a.indexOf('FLAG') !== -1 ? 'vb vb-flag' : 'vb vb-block'; }
+function cc(v) { return v < 0.5 ? 'var(--rd)' : v < 0.75 ? 'var(--am)' : 'var(--ac)'; }
+
+function buildCard(ex) {
+  var d = document.createElement('div');
+  d.className = 'ex-card';
+
+  var flagsHtml = '';
+  if (ex.flags.length > 0) {
+    for (var i = 0; i < ex.flags.length; i++) {
+      flagsHtml += '<span style="font-family:var(--mn);font-size:9px;padding:1px 5px;border-radius:2px;margin:1px;display:inline-block;background:rgba(91,168,245,.07);color:var(--bl)">' + ex.flags[i] + '</span>';
+    }
+  } else {
+    flagsHtml = '<span style="color:var(--t2);font-size:11px">No flags &mdash; clean record</span>';
+  }
+
+  var harmHtml = '';
+  for (var j = 0; j < ex.harmonized.length; j++) {
+    harmHtml += '<span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">' + ex.harmonized[j] + '</span>';
+  }
+
+  d.innerHTML =
+    '<div class="ex-hdr">' +
+      '<div><div class="ex-ttl">' + ex.title + '</div><div class="ex-sub">' + ex.sub + '</div></div>' +
+      '<span class="' + vc(ex.action) + '">' + ex.action + '</span>' +
+    '</div>' +
+    '<div class="ex-body"><div class="ex-meta">' +
+      '<span style="font-family:var(--mn);font-size:11px;color:' + cc(ex.a4) + '">A4: ' + ex.a4 + '</span>' +
+      '<span class="ex-tag">' + ex.jur + '</span>' +
+      '<span class="ex-tag" style="background:rgba(0,212,168,.08);color:var(--ac)">' + ex.fw + '</span>' +
+    '</div><div>' + flagsHtml + '</div></div>' +
+    '<div class="ex-detail">' +
+      '<div class="det"><div class="det-lbl">Audit Finding</div><div class="det-txt">' + ex.finding + '</div></div>' +
+      '<div class="det"><div class="det-lbl">Prompt</div><div class="det-txt" style="font-family:var(--mn);font-size:11px">' + ex.prompt + '</div></div>' +
+      '<div class="det ' + (ex.action === 'PASS' ? 'pass' : 'fail') + '"><div class="det-lbl">Output</div><div class="det-txt" style="font-family:var(--mn);font-size:11px">' + ex.output + '</div></div>' +
+      '<div class="harmonized-flags"><div class="harmonized-flags-lbl">Also satisfies (harmonized controls)</div>' + harmHtml + '</div>' +
+    '</div>';
+
+  // Toggle on header click — no inline onclick
+  d.querySelector('.ex-hdr').addEventListener('click', function() {
+    d.classList.toggle('open');
+  });
+
+  return d;
+}
+
+function filterEx() {
+  var j   = document.getElementById('f-jur').value;
+  var fw  = document.getElementById('f-fw').value;
+  var list = EX.filter(function(e) {
+    return (!j || e.jur === j) && (!fw || e.fw.indexOf(fw) !== -1);
+  });
+  document.getElementById('f-count').textContent = list.length + ' record' + (list.length !== 1 ? 's' : '');
+  var c = document.getElementById('ex-container');
+  c.innerHTML = '';
+  for (var i = 0; i < list.length; i++) {
+    c.appendChild(buildCard(list[i]));
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  // Theme
+  var currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  updateThemeBtn(currentTheme);
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('umi-theme', t);
+    updateThemeBtn(t);
+  });
+
+  // Filters
+  document.getElementById('f-jur').addEventListener('change', filterEx);
+  document.getElementById('f-fw').addEventListener('change', filterEx);
+
+  // Initial render
+  filterEx();
+});
+</script>
+
+</body>
+</html>

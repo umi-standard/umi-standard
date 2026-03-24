@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UMI Standard — SIEM &amp; Logs</title>
+<meta name="description" content="Structural anomaly signals for network syslogs and software events. Same schema as AI compliance. One trace — NIS2, DORA, ISO 27001, SOC 2 addressed simultaneously.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--mn:"IBM Plex Mono",monospace;--sn:"IBM Plex Sans",sans-serif;--ac:#00d4a8;--rd:#ff3d5c;--bl:#5ba8f5;--am:#f5a623;--pu:#a07af0}
+html[data-theme="dark"]{--bg:#07090d;--bg2:#0b0f15;--bg3:#0f1520;--b1:#1a2535;--b2:#243550;--t1:#b8cfe0;--t2:#506070;--t3:#e0f0ff;--nav-bg:rgba(7,9,13,.97);--grid-col:#1a2535;--code-bg:#040608}
+html[data-theme="light"]{--bg:#f4f7fa;--bg2:#eaf0f6;--bg3:#dde6ef;--b1:#c8d8e8;--b2:#b0c4d4;--t1:#1e2e3c;--t2:#3a5268;--t3:#0a1520;--nav-bg:rgba(244,247,250,.97);--grid-col:#c8d8e8;--code-bg:#e2eaf2}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--sn);font-size:16px;line-height:1.7;overflow-x:hidden;transition:background .25s,color .25s}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(var(--grid-col) 1px,transparent 1px),linear-gradient(90deg,var(--grid-col) 1px,transparent 1px);background-size:56px 56px;opacity:.07;pointer-events:none;z-index:-1;transition:opacity .25s}
+html[data-theme="light"] body::before{opacity:.18}
+.nav-wrap{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1);transition:background .25s,border-color .25s}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:56px;max-width:1280px;margin:0 auto}
+.logo{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;text-decoration:none;display:flex;align-items:center;gap:7px}
+.logo-dim{color:var(--t2)}
+.nav-r{display:flex;align-items:center;gap:6px}
+.nav-l{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.07em;padding:5px 10px;border-radius:2px;transition:color .2s}
+.nav-l:hover{color:var(--ac)}
+.nav-cta{background:var(--ac);color:var(--bg)!important;font-weight:500;padding:5px 16px!important;border-radius:2px}
+.theme-btn{display:flex;align-items:center;gap:5px;font-family:var(--mn);font-size:11px;color:var(--t2);background:transparent;border:1px solid var(--b1);border-radius:2px;padding:4px 10px;cursor:pointer;transition:border-color .2s,color .2s;letter-spacing:.06em}
+.theme-btn:hover{border-color:var(--ac);color:var(--ac)}
+.subnav{border-top:1px solid var(--b1)}
+.subnav-inner{display:flex;align-items:center;padding:0 52px;height:36px;max-width:1280px;margin:0 auto;gap:2px;overflow-x:auto}
+.sn-link{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.06em;padding:4px 11px;border-radius:2px;transition:color .2s,background .2s;white-space:nowrap}
+.sn-link:hover{color:var(--t3);background:rgba(0,0,0,.04)}
+.sn-link.active{color:var(--bl);background:rgba(91,168,245,.07)}
+.sn-sep{width:1px;height:14px;background:var(--b1);margin:0 6px;flex-shrink:0}
+.sn-ext{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;padding:4px 11px;display:flex;align-items:center;gap:4px;transition:color .2s;white-space:nowrap}
+.sn-ext:hover{color:var(--t3)}
+.pt{padding-top:94px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 52px}
+section{padding:72px 0}
+.sdiv{height:1px;background:linear-gradient(90deg,transparent,var(--b1) 20%,var(--b1) 80%,transparent);margin:0 52px}
+.eyebrow{font-family:var(--mn);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--bl);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:16px;height:1px;background:currentColor;opacity:.6}
+h1{font-family:var(--mn);font-size:clamp(26px,3.8vw,50px);font-weight:300;color:var(--t3);line-height:1.16;letter-spacing:-.02em;margin-bottom:16px}
+h1 em{font-style:normal;color:var(--bl)}
+h1 .dim{color:var(--t2)}
+h2{font-family:var(--mn);font-size:clamp(18px,2.2vw,28px);font-weight:300;color:var(--t3);line-height:1.22;letter-spacing:-.01em;margin-bottom:14px}
+h2 .dim{color:var(--t2)}
+.lead{font-size:16px;color:var(--t1);font-weight:300;line-height:1.85;max-width:640px;margin-bottom:32px}
+.lead strong{color:var(--t3);font-weight:500}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 24px;font-family:var(--mn);font-size:11px;letter-spacing:.08em;text-decoration:none;border-radius:2px;transition:.18s;text-transform:uppercase;border:1px solid transparent;cursor:pointer}
+.btn-bl{background:var(--bl);color:var(--bg);font-weight:500;border-color:var(--bl)}.btn-bl:hover{opacity:.87;transform:translateY(-1px)}
+.btn-s{background:transparent;color:var(--t1);border-color:var(--b2)}.btn-s:hover{border-color:var(--bl);color:var(--bl)}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px}
+.cb{background:var(--code-bg);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:20px}
+.cb-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--bg3);border-bottom:1px solid var(--b1)}
+.cb-hdr span{font-family:var(--mn);font-size:10px;color:var(--t2);letter-spacing:.05em}
+.dots{display:flex;gap:5px}.dots i{width:7px;height:7px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.cb-body{padding:16px 20px;font-family:var(--mn);font-size:12px;line-height:1.9;overflow-x:auto;color:var(--t2)}
+.kw{color:#5ba8f5}.fn2{color:#a07af0}.nm{color:#f5a623}.cm{color:#4a6070;font-style:italic}.op{color:var(--ac)}.st{color:#7dd07d}
+.box{border-left:3px solid var(--bl);background:var(--bg3);border-radius:0 4px 4px 0;padding:20px 24px;margin-bottom:14px;transition:background .25s}
+.box.am{border-left-color:var(--am)}.box.rd{border-left-color:var(--rd)}.box.pu{border-left-color:var(--pu)}.box.dim{border-left-color:var(--b2)}.box.ac{border-left-color:var(--ac)}
+.box-lbl{font-family:var(--mn);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--bl);margin-bottom:7px}
+.box.am .box-lbl{color:var(--am)}.box.dim .box-lbl{color:var(--t2)}.box.ac .box-lbl{color:var(--ac)}.box.pu .box-lbl{color:var(--pu)}
+.box p{font-size:14px;color:var(--t3);font-weight:300;line-height:1.75}
+.box.dim p{font-size:13px;color:var(--t2)}
+.vb{font-family:var(--mn);font-size:10px;padding:3px 8px;border-radius:2px;font-weight:500;white-space:nowrap}
+.vb-block{background:rgba(255,61,92,.15);color:#ff3d5c;border:1px solid rgba(255,61,92,.3)}
+.vb-flag{background:rgba(245,166,35,.15);color:#f5a623;border:1px solid rgba(245,166,35,.3)}
+.vb-pass{background:rgba(0,212,168,.12);color:#00d4a8;border:1px solid rgba(0,212,168,.25)}
+/* SO WHAT */
+.sowhat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:28px;transition:background .25s,border-color .25s}
+.sw{background:var(--bg3);padding:26px;transition:background .25s}
+.sw:hover{background:var(--bg2)}
+.sw-who{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:9px}
+.sw-line{font-size:15px;color:var(--t3);font-weight:300;line-height:1.55;margin-bottom:9px}
+.sw-line em{font-style:normal;color:var(--bl)}
+.sw-sub{font-size:12px;color:var(--t2);line-height:1.65}
+/* COMPARISON */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:20px;transition:background .25s,border-color .25s}
+.cmp-col{background:var(--bg3);padding:24px;transition:background .25s}
+.cmp-col.bad{border-top:2px solid var(--rd)}.cmp-col.good{border-top:2px solid var(--bl)}
+.cmp-hdr{font-family:var(--mn);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.cmp-col.bad .cmp-hdr{color:var(--rd)}.cmp-col.good .cmp-hdr{color:var(--bl)}
+.cmp-item{display:flex;align-items:flex-start;gap:9px;margin-bottom:10px;font-size:13px;color:var(--t2);line-height:1.65}
+.cmp-col.bad  .cmp-item::before{content:"x";font-family:var(--mn);font-size:9px;color:var(--rd);margin-top:4px;flex-shrink:0}
+.cmp-col.good .cmp-item::before{content:"v";font-family:var(--mn);font-size:9px;color:var(--bl);margin-top:4px;flex-shrink:0}
+/* SCHEMA TABLE */
+.mtbl{width:100%;border-collapse:collapse;margin-bottom:24px}
+.mtbl th{text-align:left;padding:9px 14px;font-family:var(--mn);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t2);border-bottom:1px solid var(--b1);font-weight:400}
+.mtbl td{padding:11px 14px;border-bottom:1px solid var(--b1);vertical-align:top;font-size:12px}
+.mtbl tr:last-child td{border-bottom:none}.mtbl tr:hover td{background:var(--bg2)}
+.mf{font-family:var(--mn);font-size:11px;color:var(--bl)}.mv{color:var(--t3)}.md{color:var(--t2);font-size:11px;line-height:1.5;margin-top:2px}
+/* HARMONIZED */
+.harm-box{background:var(--bg3);border:1px solid var(--b1);border-radius:6px;padding:22px;margin-bottom:22px;transition:background .25s}
+.harm-scenario{font-family:var(--mn);font-size:12px;color:var(--t2);background:var(--bg2);border:1px solid var(--b1);border-radius:3px;padding:11px 14px;margin-bottom:14px;line-height:1.7;transition:background .25s}
+.harm-scenario strong{color:var(--t3)}
+.harm-badge-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:10px}
+.harm-badge{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--b2);border-radius:3px;padding:7px 11px;min-width:130px;transition:border-color .2s,background .25s}
+.harm-badge:hover{border-color:var(--bl)}
+.harm-badge-type{font-family:var(--mn);font-size:9px;padding:1px 5px;border-radius:2px;width:fit-content;margin-bottom:4px}
+.hw-ext{background:rgba(91,168,245,.1);color:var(--bl)}
+.hw-int{background:rgba(160,122,240,.1);color:var(--pu)}
+.harm-badge-name{font-family:var(--mn);font-size:11px;font-weight:500;color:var(--t3);margin-bottom:2px}
+.harm-badge-art{font-family:var(--mn);font-size:10px;color:var(--t2)}
+.harm-arrow{font-family:var(--mn);font-size:18px;color:var(--t2);opacity:.3;align-self:center}
+.harm-note{font-size:13px;color:var(--t2);line-height:1.7;margin-top:10px;padding-top:10px;border-top:1px solid var(--b1)}
+.harm-note strong{color:var(--bl);font-family:var(--mn);font-size:11px;letter-spacing:.04em}
+/* LOG CARDS */
+.tabs{display:flex;border-bottom:1px solid var(--b1);margin-bottom:20px}
+.tab{font-family:var(--mn);font-size:12px;letter-spacing:.06em;color:var(--t2);padding:9px 20px;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s}
+.tab:hover{color:var(--t3)}.tab.active{color:var(--bl);border-bottom-color:var(--bl)}
+.lc{background:var(--bg3);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:10px;transition:border-color .2s,background .25s}
+.lc:hover{border-color:var(--b2)}.lc.open{border-color:var(--bl)}
+.lc-hdr{padding:13px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;cursor:pointer}
+.lc.open .lc-hdr{background:rgba(91,168,245,.03)}
+.lc-ttl{font-family:var(--mn);font-size:12px;font-weight:500;color:var(--t3)}
+.lc-src{font-size:11px;color:var(--t2);margin-top:3px;font-family:var(--mn)}
+.lc-body{padding:11px 16px}
+.lc-meta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:5px}
+.lc-detail{display:none;padding:0 16px 14px}
+.lc.open .lc-detail{display:block}
+.det2{border-left:2px solid var(--b2);padding:9px 14px;margin-bottom:7px;background:var(--bg2);border-radius:0 3px 3px 0;transition:background .25s}
+.det2-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--t2);margin-bottom:4px}
+.det2-txt{font-size:12px;color:var(--t1);line-height:1.65}
+.det2.finding{border-left-color:var(--bl)}
+.lc-harmonized{margin-top:7px;padding:8px 12px;background:rgba(160,122,240,.06);border-radius:3px;border:1px solid rgba(160,122,240,.15)}
+.lc-harm-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--pu);margin-bottom:5px}
+/* ── JURISDICTION MAP ─────────────────────────────────────────────── */
+.jmap-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px}
+.jmap-btn{background:var(--bg3);border:1px solid var(--b1);border-radius:4px;padding:16px;cursor:pointer;text-align:left;transition:border-color .2s,background .2s}
+.jmap-btn:hover{border-color:var(--b2);background:var(--bg2)}
+.jmap-btn.selected{border-color:var(--bl);background:rgba(91,168,245,.05)}
+.jmap-flag{font-size:20px;margin-bottom:6px;display:block}
+.jmap-name{font-family:var(--mn);font-size:12px;font-weight:500;color:var(--t3);margin-bottom:2px}
+.jmap-sector{font-family:var(--mn);font-size:10px;color:var(--t2);letter-spacing:.04em}
+.jmap-output{background:var(--bg2);border:1px solid var(--b1);border-radius:6px;padding:24px;transition:background .25s,border-color .25s;min-height:280px}
+.jmap-fw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.jmap-fw{border-radius:4px;padding:12px 14px;transition:background .2s,border-color .2s;border:1px solid transparent}
+.jmap-fw.full{background:rgba(91,168,245,.1);border-color:rgba(91,168,245,.3)}
+.jmap-fw.conditional{background:rgba(245,166,35,.07);border-color:rgba(245,166,35,.2)}
+.jmap-fw.none{background:var(--bg3);border-color:var(--b1);opacity:.35}
+.jmap-fw-name{font-family:var(--mn);font-size:11px;font-weight:500;margin-bottom:3px}
+.jmap-fw.full .jmap-fw-name{color:var(--bl)}
+.jmap-fw.conditional .jmap-fw-name{color:var(--am)}
+.jmap-fw.none .jmap-fw-name{color:var(--t2)}
+.jmap-fw-art{font-family:var(--mn);font-size:10px;color:var(--t2);line-height:1.4}
+.jmap-fw-status{font-family:var(--mn);font-size:9px;padding:1px 5px;border-radius:2px;width:fit-content;margin-bottom:5px;letter-spacing:.05em}
+.jmap-fw.full .jmap-fw-status{background:rgba(91,168,245,.15);color:var(--bl)}
+.jmap-fw.conditional .jmap-fw-status{background:rgba(245,166,35,.12);color:var(--am)}
+.jmap-fw.none .jmap-fw-status{background:rgba(80,96,112,.12);color:var(--t2)}
+.jmap-legend{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.jmap-legend-item{display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--t2)}
+.jmap-legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.jmap-legend-dot.full{background:var(--bl)}
+.jmap-legend-dot.conditional{background:var(--am)}
+.jmap-legend-dot.none{background:var(--b2)}
+.jmap-surprise{background:rgba(160,122,240,.06);border:1px solid rgba(160,122,240,.2);border-radius:4px;padding:14px 18px;margin-top:14px;display:none}
+.jmap-surprise.visible{display:block}
+.jmap-surprise-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--pu);margin-bottom:5px}
+.jmap-surprise-txt{font-size:13px;color:var(--t2);line-height:1.65}
+.jmap-surprise-txt strong{color:var(--pu)}
+/* COST MODEL */
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:18px;transition:background .25s,border-color .25s}
+.cc2{background:var(--bg3);padding:22px;transition:background .25s}
+.cc2.old{border-top:2px solid var(--rd)}.cc2.new{border-top:2px solid var(--bl)}
+.cc2-lbl{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;font-weight:500}
+.cc2.old .cc2-lbl{color:var(--rd)}.cc2.new .cc2-lbl{color:var(--bl)}
+.cr{display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px;padding-bottom:8px;border-bottom:1px solid var(--b1)}
+.cr:last-child{border-bottom:none;margin-bottom:0}
+.ck{color:var(--t2)}.cv{font-family:var(--mn);font-size:12px}
+.cc2.old .cv{color:var(--rd)}.cc2.new .cv{color:var(--bl)}
+.api-bridge{background:var(--bg2);border:1px solid var(--b2);border-top:2px solid var(--ac);border-radius:0 0 4px 4px;padding:16px 20px;margin-top:-1px;margin-bottom:16px;display:flex;align-items:center;gap:14px;transition:background .25s}
+.api-bridge-ico{font-family:var(--mn);font-size:11px;color:var(--ac);background:rgba(0,212,168,.08);border:1px solid rgba(0,212,168,.2);padding:4px 10px;border-radius:2px;white-space:nowrap;flex-shrink:0}
+.api-bridge-txt{font-size:13px;color:var(--t2);line-height:1.6}
+.api-bridge-txt strong{color:var(--ac);font-family:var(--mn);font-size:11px}
+/* FOOTER */
+.site-footer{border-top:1px solid var(--b1);padding:48px 52px;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;transition:border-color .25s}
+.ft-brand{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;margin-bottom:8px}
+.ft-copy{font-size:12px;color:var(--t2);line-height:1.75;max-width:300px}
+.ft-col-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);opacity:.45;margin-bottom:10px}
+.ft-links{display:flex;flex-direction:column;gap:7px}
+.ft-links a{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;transition:color .2s}
+.ft-links a:hover{color:var(--ac)}
+@media(max-width:1000px){.jmap-selector{grid-template-columns:repeat(2,1fr)}.jmap-fw-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.sowhat-grid{grid-template-columns:1fr}.site-footer{grid-template-columns:1fr 1fr;padding:32px 20px}}
+@media(max-width:720px){.cmp{grid-template-columns:1fr}.cost-grid{grid-template-columns:1fr}.harm-badge-row{flex-direction:column}.jmap-fw-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){nav,.subnav-inner{padding-left:20px;padding-right:20px}.wrap{padding:0 20px}.sdiv{margin:0 20px}.hide-mob{display:none}}
+@media(max-width:560px){.site-footer{grid-template-columns:1fr;padding:24px 20px}.jmap-selector{grid-template-columns:1fr 1fr}.jmap-fw-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="nav-wrap">
+  <nav>
+    <a href="index.html" class="logo"><span style="font-size:9px;opacity:.4">&#9658;</span>UMI<span class="logo-dim">-standard</span></a>
+    <div class="nav-r">
+      <a href="https://github.com/umi-standard/umi-standard" class="nav-l hide-mob" target="_blank">GitHub</a>
+      <button class="theme-btn" id="theme-toggle" title="Toggle light/dark mode">
+        <span id="theme-icon">&#9788;</span>
+        <span id="theme-label">Light</span>
+      </button>
+      <a href="explorer.html" class="nav-l nav-cta">Try Explorer</a>
+    </div>
+  </nav>
+  <div class="subnav"><div class="subnav-inner">
+    <a href="index.html" class="sn-link">Overview</a>
+    <a href="explorer.html" class="sn-link">Explorer</a>
+    <a href="ai.html" class="sn-link">AI Compliance</a>
+    <a href="siem.html" class="sn-link active">SIEM &amp; Logs</a>
+    <a href="transactions.html" class="sn-link">Transactions</a>
+    <a href="velana.html" class="sn-link">VELANA Project</a>
+    <div class="sn-sep"></div>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/README.md" class="sn-ext" target="_blank">&#8599;&nbsp;Docs</a>
+    <a href="https://github.com/umi-standard/umi-standard" class="sn-ext" target="_blank">&#8997;&nbsp;Repo</a>
+  </div></div>
+</div>
+
+<div class="pt">
+
+<!-- HERO -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">SIEM &amp; Logs</div>
+  <h1>Structural anomaly signals<br>for <em>every log line.</em></h1>
+  <p class="lead">UMI applies to network syslogs and software events with <strong>zero schema changes</strong>. The same 128-bit envelope, the same SQL query, the same compliance trace structure used for AI outputs. UMI adds a queryable structural signal layer that complements existing rule-based SIEM detection.</p>
+  <div class="btns">
+    <a href="explorer.html" class="btn btn-bl">Try Network Log in Explorer &#8599;</a>
+    <a href="https://github.com/umi-standard/umi-standard/tree/main/examples/siem" class="btn btn-s" target="_blank">SIEM examples on GitHub</a>
+  </div>
+  <div class="box dim"><div class="box-lbl">Scope</div>
+  <p>UMI adds a <strong style="color:var(--t3)">structural metadata layer</strong> to log analysis. It does not replace existing SIEM platforms, regex rule engines, or domain-specific threat intelligence. It produces a queryable anomaly signal &mdash; interpretation and response remain with qualified security teams.</p></div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- SO WHAT -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Why it matters</div>
+  <h2>Three things you cannot do <span class="dim">with raw logs alone</span></h2>
+  <div class="sowhat-grid">
+    <div class="sw">
+      <div class="sw-who">Security Analyst</div>
+      <div class="sw-line">SSH brute force at <em>03:14 UTC.</em><br>You arrive at 09:00.<br>Was it part of a coordinated attack?</div>
+      <div class="sw-sub">With raw logs: hours of grepping and correlating. With UMI: one SQL query filtering A4_CLARITY below threshold in the 6-hour window. The answer is ready before your second coffee.</div>
+    </div>
+    <div class="sw">
+      <div class="sw-who">Compliance &amp; Risk Officer</div>
+      <div class="sw-line"><em>NIS2 gives you 72 hours.</em><br>The regulator wants to see that you detected it when it happened &mdash; not retrospectively.</div>
+      <div class="sw-sub">A UMI trace is the forensic receipt. It documents that the anomaly was detected and classified at the moment it occurred, with a tamper-evident checksum. That is your 72-hour evidence chain.</div>
+    </div>
+    <div class="sw">
+      <div class="sw-who">SIEM Architect</div>
+      <div class="sw-line">Your SIEM ingests <em>terabytes daily.</em><br>You pay per GB.<br>Most of it is routine PASS-level traffic.</div>
+      <div class="sw-sub">UMI as a pre-processing layer means only anomalous records need forwarding to your central SIEM. Routine events are encoded locally as 16-byte traces. Ingestion costs drop by an order of magnitude.</div>
+    </div>
+  </div>
+  <div class="cb">
+    <div class="cb-hdr"><div class="dots"><i></i><i></i><i></i></div>
+    <span>NIS2 forensic query &mdash; find every anomaly in the incident window</span><span>SQL</span></div>
+    <div class="cb-body"><span class="cm">-- 03:14 UTC incident. What else happened in the same window?</span>
+<span class="kw">SELECT</span> trace_id, timestamp_utc,
+       semantic_summary<span class="op">->></span><span class="nm">'domain'</span>        <span class="kw">AS</span> subsystem,
+       (semantic_summary<span class="op">->></span><span class="nm">'coherence_score'</span>)<span class="op">::</span><span class="fn2">float</span> <span class="kw">AS</span> a4
+<span class="kw">FROM</span>   umi_traces
+<span class="kw">WHERE</span>  (semantic_summary<span class="op">->></span><span class="nm">'coherence_score'</span>)<span class="op">::</span><span class="fn2">float</span> <span class="op">&lt;</span> <span class="nm">0.25</span>
+  <span class="kw">AND</span>  timestamp_utc <span class="op">BETWEEN</span> <span class="nm">'2026-03-24T02:00:00Z'</span>
+                         <span class="kw">AND</span> <span class="nm">'2026-03-24T05:00:00Z'</span>
+<span class="kw">ORDER BY</span> a4 <span class="kw">ASC</span><span class="op">;</span>
+<span class="cm">-- Returns every critical anomaly ranked by severity.</span>
+<span class="cm">-- This IS your NIS2 Art.23 forensic timeline.</span></div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- HARMONIZED CONTROLS -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Harmonized controls</div>
+  <h2>One log event. <span class="dim">Every framework that applies.</span></h2>
+  <p class="lead">A single log anomaly can simultaneously implicate NIS2, DORA, ISO 27001, SOC 2, and CIS Controls. One UMI trace addresses all of them &mdash; your SIEM team and your compliance team pull from the same record.</p>
+  <div class="harm-box">
+    <div style="font-family:var(--mn);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--am);margin-bottom:12px">Real scenario &mdash; one log line, one trace, all of this satisfied</div>
+    <div class="harm-scenario">
+      A database connection pool exhausts completely at 14:33 UTC. 847 connections rejected in 60 seconds.
+      The AI operations platform loses access to its primary data store.
+      <strong>One UMI trace. Every team below gets their evidence simultaneously.</strong>
+    </div>
+    <div class="harm-badge-row">
+      <div class="harm-badge"><span class="harm-badge-type hw-ext">External</span><div class="harm-badge-name">DORA</div><div class="harm-badge-art">Art. 17 &middot; Major ICT incident</div></div>
+      <div class="harm-badge"><span class="harm-badge-type hw-ext">External</span><div class="harm-badge-name">NIS2</div><div class="harm-badge-art">Art. 23 &middot; Reportable incident</div></div>
+      <div class="harm-badge"><span class="harm-badge-type hw-ext">External</span><div class="harm-badge-name">BSI KRITIS</div><div class="harm-badge-art">Critical infra incident log</div></div>
+      <div class="harm-arrow">&rarr;</div>
+      <div class="harm-badge" style="border-color:var(--pu)"><span class="harm-badge-type hw-int">Internal</span><div class="harm-badge-name">ISO 27001</div><div class="harm-badge-art">A.8.15 &middot; Event monitoring</div></div>
+      <div class="harm-badge" style="border-color:var(--pu)"><span class="harm-badge-type hw-int">Internal</span><div class="harm-badge-name">SOC 2</div><div class="harm-badge-art">CC7.2 &middot; System monitoring</div></div>
+      <div class="harm-badge" style="border-color:var(--pu)"><span class="harm-badge-type hw-int">Internal</span><div class="harm-badge-name">CIS Controls v8</div><div class="harm-badge-art">Control 8 &middot; Audit log mgmt</div></div>
+    </div>
+    <div class="harm-note">
+      <strong>What this means in practice.</strong>
+      Your DORA team needs an ICT incident classification record. Your NIS2 team needs a 72-hour notification evidence chain. Your ISO 27001 auditor needs an A.8.15 monitoring log. Your SOC 2 auditor needs CC7.2 evidence. Today those are four separate spreadsheets. With UMI they are all one SQL query on one table.
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- COMPLEMENTARY APPROACH -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Complementary approach</div>
+  <h2>UMI alongside <span class="dim">rule-based detection</span></h2>
+  <p class="lead">Existing SIEM platforms use rule-based detection. UMI adds a structural signal layer. The two approaches address different failure modes.</p>
+  <div class="cmp">
+    <div class="cmp-col bad">
+      <div class="cmp-hdr">Rule-based SIEM limitations</div>
+      <div class="cmp-item">Rules written manually for each known attack pattern</div>
+      <div class="cmp-item">Novel variants can evade rigid pattern matching</div>
+      <div class="cmp-item">Separate rule sets for each log format and source</div>
+      <div class="cmp-item">Alert fatigue from high false-positive rates on noisy rules</div>
+      <div class="cmp-item">Rules do not produce structured compliance records</div>
+    </div>
+    <div class="cmp-col good">
+      <div class="cmp-hdr">What UMI adds on top</div>
+      <div class="cmp-item">A4_CLARITY measures deviation from baseline execution graph</div>
+      <div class="cmp-item">Structural deviation measurable independent of specific pattern</div>
+      <div class="cmp-item">Same schema for all log types, sources, and substrates</div>
+      <div class="cmp-item">Single tunable A4_CLARITY threshold instead of thousands of rules</div>
+      <div class="cmp-item">Every record is a SQL-queryable compliance artifact</div>
+    </div>
+  </div>
+  <div class="box"><div class="box-lbl">The key insight</div>
+  <p>A conformant encoder reads log text and extracts structural properties. A4_CLARITY in the log context measures <strong style="color:var(--bl)">deviation from baseline</strong> &mdash; the same field, the same threshold, the same routing logic used for AI output analysis. <strong style="color:var(--t3)">The schema does not change. Not one field.</strong></p></div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- SCHEMA MAPPING -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Schema mapping</div>
+  <h2>How logs map to <span class="dim">UMI fields</span></h2>
+  <p class="lead">Every UMI field has a direct analogue in the log context. Switch the substrate selector in the <a href="explorer.html" style="color:var(--bl);font-family:var(--mn);font-size:15px;text-decoration:none">Explorer</a> to see this live.</p>
+  <table class="mtbl">
+    <thead><tr><th>UMI Field</th><th>In AI context</th><th>In log context</th></tr></thead>
+    <tbody>
+      <tr><td class="mf">A1_TARGET</td><td class="mv">What the claim is about<div class="md">e.g. Credit_Risk_Assessment</div></td><td class="mv">What subsystem produced the event<div class="md">e.g. Network_Access_Control, Database_Availability</div></td></tr>
+      <tr><td class="mf">A2_CLAIM</td><td class="mv">How the claim is framed</td><td class="mv">What the event outcome was<div class="md">ABSOLUTE_NEGATIVE = access denied, resource exhausted</div></td></tr>
+      <tr><td class="mf">A3_SCORE</td><td class="mv">Expression intensity</td><td class="mv">Severity signal<div class="md">0 = debug &nbsp;&middot;&nbsp; 1 = critical</div></td></tr>
+      <tr><td class="mf" style="color:var(--ac)">A4_CLARITY</td><td class="mv" style="color:var(--t3)">Reasoning consistency<div class="md" style="color:var(--t2)">Low = structural inconsistency signal</div></td><td class="mv" style="color:var(--t3)">Causal anomaly score<div class="md" style="color:var(--t2)">Low = deviation from baseline execution graph</div></td></tr>
+      <tr><td class="mf">A5_TIMEFRAME</td><td class="mv">When the claim applies</td><td class="mv">Always PRESENT_SPECIFIC for live event streams</td></tr>
+      <tr><td class="mf">context_metadata</td><td class="mv">Conversation metadata</td><td class="mv">SIEM extension point<div class="md">source_ip, pid, process_name, pool_size, baseline_avg</div></td></tr>
+      <tr><td class="mf">raw_payload.output</td><td class="mv">The AI response text</td><td class="mv">The raw log line verbatim &mdash; always preserved</td></tr>
+    </tbody>
+  </table>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- LOG EXAMPLES -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Examples</div>
+  <h2>Real log records &mdash; <span class="dim">network &amp; software</span></h2>
+  <p class="lead">Values from the two SIEM example records in the public repository. Expand each record to see the structural finding and the harmonized controls it satisfies simultaneously.</p>
+  <div class="tabs">
+    <button class="tab active" id="tab-btn-net">Network Logs</button>
+    <button class="tab" id="tab-btn-sw">Software Logs</button>
+  </div>
+  <div id="tab-net">
+    <div class="lc" id="lc-net-1">
+      <div class="lc-hdr"><div><div class="lc-ttl">SSH Brute Force &mdash; Root Account</div><div class="lc-src">sshd[1234] &middot; prod-firewall-01 &middot; 03:14 UTC</div></div><span class="vb vb-block">BLOCK</span></div>
+      <div class="lc-body"><div class="lc-meta"><span style="font-family:var(--mn);font-size:11px;color:var(--rd)">A4: 0.08</span><span style="font-family:var(--mn);font-size:10px;padding:2px 6px;border-radius:2px;background:rgba(91,168,245,.08);color:var(--bl)">NIS2 Art.23</span><span style="font-family:var(--mn);font-size:10px;padding:2px 6px;border-radius:2px;background:rgba(91,168,245,.08);color:var(--bl)">BSI KRITIS</span></div></div>
+      <div class="lc-detail">
+        <div class="det2"><div class="det2-lbl">Raw Log Line</div><div class="det2-txt">[Auth_Fail] sshd[1234]: Failed password for invalid user root from 192.168.1.55 port 22 ssh2</div></div>
+        <div class="det2 finding"><div class="det2-lbl">Structural Anomaly Finding</div><div class="det2-txt" style="font-family:var(--sn)">A4_CLARITY 0.08 &mdash; behaviour deviates critically from 90-day baseline. Root login attempts from 192.168.1.55 have zero prior occurrences. Pattern consistent with automated credential stuffing. This trace IS the NIS2 forensic receipt &mdash; timestamped and checksummed at detection time, not retrospectively.</div></div>
+        <div class="det2"><div class="det2-lbl">context_metadata</div><div class="det2-txt">source_ip: 192.168.1.55 &middot; port: 22 &middot; process: sshd &middot; baseline_avg: 0.88</div></div>
+        <div class="lc-harmonized"><div class="lc-harm-lbl">Also satisfies</div><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">ISO 27001 A.8.15</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">ISO 27001 A.8.16</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">SOC 2 CC7.2</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">CIS Control 8</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">NIST CSF DE.CM</span></div>
+      </div>
+    </div>
+    <div class="lc" id="lc-net-2">
+      <div class="lc-hdr"><div><div class="lc-ttl">Port Scan &mdash; 847 Ports / 4 Seconds</div><div class="lc-src">firewall &middot; prod-perimeter-01</div></div><span class="vb vb-block">BLOCK</span></div>
+      <div class="lc-body"><div class="lc-meta"><span style="font-family:var(--mn);font-size:11px;color:var(--rd)">A4: 0.03</span><span style="font-family:var(--mn);font-size:10px;padding:2px 6px;border-radius:2px;background:rgba(91,168,245,.08);color:var(--bl)">NIS2 Art.21</span><span style="font-family:var(--mn);font-size:10px;padding:2px 6px;border-radius:2px;background:rgba(91,168,245,.08);color:var(--bl)">DORA Art.17</span></div></div>
+      <div class="lc-detail">
+        <div class="det2"><div class="det2-lbl">Raw Log Line</div><div class="det2-txt">[Warning] firewall: Sequential port scan from 203.0.113.42 &mdash; 847 ports probed in 4 seconds</div></div>
+        <div class="det2 finding"><div class="det2-lbl">Structural Anomaly Finding</div><div class="det2-txt" style="font-family:var(--sn)">A4_CLARITY 0.03 &mdash; 212 ports/second from a single source deviates critically from any baseline of legitimate network operation. Active reconnaissance signal.</div></div>
+        <div class="lc-harmonized"><div class="lc-harm-lbl">Also satisfies</div><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">ISO 27001 A.8.15</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">SOC 2 CC7.2</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">CIS Control 8</span></div>
+      </div>
+    </div>
+    <div class="lc" id="lc-net-3">
+      <div class="lc-hdr"><div><div class="lc-ttl">CI/CD Deployment &mdash; Expected Pipeline</div><div class="lc-src">deployment[5678] &middot; prod-build-01 &middot; 14:02 UTC</div></div><span class="vb vb-pass">PASS</span></div>
+      <div class="lc-body"><div class="lc-meta"><span style="font-family:var(--mn);font-size:11px;color:var(--ac)">A4: 0.92</span><span style="font-size:11px;color:var(--t2)">No flags</span></div></div>
+      <div class="lc-detail">
+        <div class="det2"><div class="det2-lbl">Raw Log Line</div><div class="det2-txt">[Info] deployment[5678]: Successful pull request merge by ci-bot from 10.0.0.5. Build pipeline triggered.</div></div>
+        <div class="det2 finding"><div class="det2-lbl">Structural Anomaly Finding</div><div class="det2-txt" style="font-family:var(--sn)">A4_CLARITY 0.92 &mdash; matches expected baseline exactly. PASS records are compliance evidence too: they demonstrate the monitoring system is active and calibrated.</div></div>
+        <div class="lc-harmonized"><div class="lc-harm-lbl">PASS record satisfies (active monitoring evidence)</div><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">ISO 27001 A.8.15 &mdash; monitoring active</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">SOC 2 CC7.2 &mdash; baseline established</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="tab-sw" style="display:none">
+    <div class="lc" id="lc-sw-1">
+      <div class="lc-hdr"><div><div class="lc-ttl">Database Connection Pool Exhausted</div><div class="lc-src">db-pool-manager &middot; prod-db-cluster-01 &middot; 14:33 UTC</div></div><span class="vb vb-block">BLOCK</span></div>
+      <div class="lc-body"><div class="lc-meta"><span style="font-family:var(--mn);font-size:11px;color:var(--rd)">A4: 0.11</span><span style="font-family:var(--mn);font-size:10px;padding:2px 6px;border-radius:2px;background:rgba(91,168,245,.08);color:var(--bl)">DORA Art.17</span><span style="font-family:var(--mn);font-size:10px;padding:2px 6px;border-radius:2px;background:rgba(91,168,245,.08);color:var(--bl)">NIS2 Art.23</span></div></div>
+      <div class="lc-detail">
+        <div class="det2"><div class="det2-lbl">Raw Log Line</div><div class="det2-txt">[CRITICAL] db-pool: All 500 connections exhausted. New connections rejected. Service degradation active.</div></div>
+        <div class="det2 finding"><div class="det2-lbl">Structural Anomaly Finding</div><div class="det2-txt" style="font-family:var(--sn)">A4_CLARITY 0.11 &mdash; complete pool exhaustion deviates critically from baseline avg 0.91. Drop: 0.80. 847 connections rejected in last 60 seconds. DORA Art. 17 major ICT incident threshold assessment required.</div></div>
+        <div class="det2"><div class="det2-lbl">context_metadata</div><div class="det2-txt">pool_size: 500 &middot; active: 500 &middot; rejected_last_60s: 847 &middot; service_degradation: true &middot; baseline_avg: 0.91</div></div>
+        <div class="lc-harmonized"><div class="lc-harm-lbl">Also satisfies</div><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">ISO 27001 A.8.15</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">ISO 27001 A.8.16</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">SOC 2 CC7.2</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">SOC 2 CC7.3</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">CIS Control 8</span></div>
+      </div>
+    </div>
+    <div class="lc" id="lc-sw-2">
+      <div class="lc-hdr"><div><div class="lc-ttl">Kernel OOM &mdash; Java Process Killed</div><div class="lc-src">kernel &middot; prod-app-03 &middot; 11:22 UTC</div></div><span class="vb vb-flag">FLAG</span></div>
+      <div class="lc-body"><div class="lc-meta"><span style="font-family:var(--mn);font-size:11px;color:var(--am)">A4: 0.22</span><span style="font-family:var(--mn);font-size:10px;padding:2px 6px;border-radius:2px;background:rgba(245,166,35,.1);color:var(--am)">DORA ICT Risk</span></div></div>
+      <div class="lc-detail">
+        <div class="det2"><div class="det2-lbl">Raw Log Line</div><div class="det2-txt">kernel: Out of memory: Kill process 9876 (java) score 847 or sacrifice child</div></div>
+        <div class="det2 finding"><div class="det2-lbl">Structural Anomaly Finding</div><div class="det2-txt" style="font-family:var(--sn)">A4_CLARITY 0.22 &mdash; OOM activation deviates from healthy baseline. FLAG_FOR_REVIEW &mdash; single event vs recurring pattern determines DORA classification.</div></div>
+        <div class="lc-harmonized"><div class="lc-harm-lbl">Also satisfies</div><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">ISO 27001 A.8.15</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">SOC 2 CC7.2</span><span style="font-family:var(--mn);font-size:9px;padding:2px 6px;border-radius:2px;background:rgba(160,122,240,.08);color:var(--pu);margin:2px;display:inline-block">PCI DSS Req.10.2</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="btns" style="margin-top:16px">
+    <a href="explorer.html" class="btn btn-bl">Try Network Log in Explorer &rarr;</a>
+    <a href="https://github.com/umi-standard/umi-standard/tree/main/examples/siem" class="btn btn-s" target="_blank">SIEM examples on GitHub</a>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- JURISDICTION MAP -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Who is this for?</div>
+  <h2>Click an organisation. <span class="dim">See which frameworks apply.</span></h2>
+  <p class="lead">UMI is not only for banks. Select any of the four profiles below to see which frameworks are fully in scope, conditionally applicable, or not applicable. The fourth profile is the one that surprises most people.</p>
+
+  <div class="jmap-selector" id="jmap-selector">
+    <button class="jmap-btn" data-idx="0">
+      <span class="jmap-flag">&#127465;&#127466;</span>
+      <div class="jmap-name">Rheinbank AG</div>
+      <div class="jmap-sector">Regional Bank &middot; Frankfurt</div>
+    </button>
+    <button class="jmap-btn" data-idx="1">
+      <span class="jmap-flag">&#127475;&#127473;</span>
+      <div class="jmap-name">VersNed Cooperatie</div>
+      <div class="jmap-sector">Food Wholesale &middot; Rotterdam</div>
+    </button>
+    <button class="jmap-btn" data-idx="2">
+      <span class="jmap-flag">&#127467;&#127479;</span>
+      <div class="jmap-name">Assurance Lyonnaise</div>
+      <div class="jmap-sector">Insurer &middot; Lyon</div>
+    </button>
+    <button class="jmap-btn" data-idx="3">
+      <span class="jmap-flag">&#127463;&#127466;</span>
+      <div class="jmap-name">MediCampus Bruxelles</div>
+      <div class="jmap-sector">University Hospital &middot; Brussels</div>
+    </button>
+  </div>
+
+  <div class="jmap-output" id="jmap-output">
+    <div style="color:var(--t2);font-family:var(--mn);font-size:12px;text-align:center;padding:40px 0;opacity:.4">Select an organisation above</div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- COST MODEL -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Cost model</div>
+  <h2>Edge encoding <span class="dim">reduces ingestion volume</span></h2>
+  <p class="lead">When a conformant encoder operates as a pre-processor at the edge, only anomalous records need forwarding to the central SIEM. Routine PASS events are encoded locally as 16-byte UMI traces.</p>
+  <div class="cost-grid">
+    <div class="cc2 old"><div class="cc2-lbl">Current &mdash; raw log ingestion</div>
+      <div class="cr"><span class="ck">Daily log volume</span><span class="cv">~10 TB / day</span></div>
+      <div class="cr"><span class="ck">Ingestion cost</span><span class="cv">~$2&ndash;3 / GB</span></div>
+      <div class="cr"><span class="ck">Annual SIEM cost</span><span class="cv">$7&ndash;10M / year</span></div>
+      <div class="cr"><span class="ck">Forensic query time</span><span class="cv">Hours to days</span></div>
+      <div class="cr"><span class="ck">Compliance evidence</span><span class="cv">Raw text, unstructured</span></div>
+    </div>
+    <div class="cc2 new"><div class="cc2-lbl">UMI model &mdash; edge pre-processing</div>
+      <div class="cr"><span class="ck">SIEM payload per event</span><span class="cv">16 bytes</span></div>
+      <div class="cr"><span class="ck">Forwarded to SIEM</span><span class="cv">0.1&ndash;1% (anomalies only)</span></div>
+      <div class="cr"><span class="ck">Annual SIEM cost (est.)</span><span class="cv">$70&ndash;100K / year</span></div>
+      <div class="cr"><span class="ck">Forensic query time</span><span class="cv">Milliseconds</span></div>
+      <div class="cr"><span class="ck">Compliance evidence</span><span class="cv">Structured, queryable, checksummed</span></div>
+    </div>
+  </div>
+
+  <div class="api-bridge">
+    <div class="api-bridge-ico">API &mdash; available now</div>
+    <div class="api-bridge-txt">
+      <strong>You do not need to wait for edge hardware.</strong>
+      The UMI encoding API is available today &mdash; submit log text, receive a structured 16-byte trace with canonical checksum, store it alongside your raw log. The cost reduction and compliance benefits apply immediately via API, with no infrastructure changes required.
+    </div>
+  </div>
+
+  <div class="box am"><div class="box-lbl">Edge appliance roadmap</div>
+  <p>MILANA Lite edge deployment &mdash; encoding inside your own infrastructure with no data leaving your environment &mdash; is planned for <strong style="color:var(--am)">late Q3 / early Q4 2026</strong>, subject to change based on partner readiness. The API remains the primary access path until then. Register interest: <span style="font-family:var(--mn);font-size:12px;color:var(--am)">hello&#64;velana-standard.org</span></p></div>
+</section>
+</div>
+
+</div>
+
+<footer class="site-footer">
+  <div><div class="ft-brand">UMI-STANDARD.ORG</div>
+  <p class="ft-copy">Universal Morphological Interface &mdash; open standard, Apache 2.0.<br><br>Stewardship provided by Aliventi sp. z o.o. via the UMI Initiative.<br><br>Copyright &copy; 2026 The UMI Initiative<br>Originally authored by Lukas Pruski</p></div>
+  <div><div class="ft-col-lbl">Standard</div><div class="ft-links">
+    <a href="https://github.com/umi-standard/umi-standard" target="_blank">GitHub Repository</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/umi.schema.json" target="_blank">Schema v1.1.2</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/GOVERNANCE.md" target="_blank">Governance</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank">Conformance</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Pages</div><div class="ft-links">
+    <a href="index.html">Overview</a><a href="explorer.html">UMI Explorer</a>
+    <a href="ai.html">AI Compliance</a><a href="siem.html">SIEM &amp; Logs</a>
+    <a href="transactions.html">Transactions</a><a href="velana.html">VELANA Project</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Contact</div><div class="ft-links">
+    <a href="https://velana-standard.org" target="_blank">velana-standard.org</a>
+    <span style="font-family:var(--mn);font-size:11px;color:var(--t2)">hello&#64;velana-standard.org</span>
+  </div></div>
+</footer>
+
+<script>
+// ── Theme ────────────────────────────────────────────────────────────────
+(function() {
+  var saved = localStorage.getItem('umi-theme');
+  var os = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', saved || os);
+})();
+
+function updateThemeBtn(theme) {
+  var icon = document.getElementById('theme-icon');
+  var label = document.getElementById('theme-label');
+  if (!icon || !label) return;
+  icon.textContent  = theme === 'light' ? '\u263D' : '\u2600';
+  label.textContent = theme === 'light' ? 'Dark' : 'Light';
+}
+
+// ── Jurisdiction map data ────────────────────────────────────────────────
+// status: 'full' | 'conditional' | 'none'
+var COMPANIES = [
+  {
+    name: 'Rheinbank AG',
+    flag: 'DE',
+    desc: 'Regional bank, ~800 employees, Frankfurt. The maximum compliance density profile.',
+    surprise: null,
+    frameworks: [
+      {name:'DORA',         status:'full',        art:'Art. 2 in scope &mdash; financial entity'},
+      {name:'NIS2',         status:'full',        art:'Annex I &mdash; financial sector essential entity'},
+      {name:'EU AI Act',    status:'full',        art:'Annex III &mdash; credit scoring, fraud detection AI'},
+      {name:'GDPR',         status:'full',        art:'General obligations, Art. 22 automated decisions'},
+      {name:'BSI KRITIS',   status:'conditional', art:'Banking threshold &mdash; depends on asset size'},
+      {name:'BSI C5',       status:'full',        art:'Cloud compliance audit requirements'},
+      {name:'ISO 27001',    status:'full',        art:'A.8.15 monitoring, A.8.34 audit logging'},
+      {name:'SOC 2',        status:'conditional', art:'If serving international institutional clients'}
+    ]
+  },
+  {
+    name: 'VersNed Cooperatie',
+    flag: 'NL',
+    desc: 'Food wholesale cooperative, ~1200 employees, Rotterdam. Surprises most compliance teams.',
+    surprise: 'Most people associate NIS2 with banks and tech companies. Food wholesale is explicitly listed in NIS2 Annex I as a critical sector. VersNed is a NIS2 essential entity with 72-hour incident reporting obligations &mdash; and no DORA obligation at all.',
+    frameworks: [
+      {name:'DORA',         status:'none',        art:'Not in scope &mdash; not a financial entity'},
+      {name:'NIS2',         status:'full',        art:'Annex I &mdash; FOOD SECTOR essential entity'},
+      {name:'EU AI Act',    status:'conditional', art:'If using AI for demand forecasting or supplier risk'},
+      {name:'GDPR',         status:'full',        art:'General obligations, employee and supplier data'},
+      {name:'BSI KRITIS',   status:'none',        art:'Not applicable &mdash; Dutch entity'},
+      {name:'BSI C5',       status:'none',        art:'Not applicable &mdash; Dutch entity'},
+      {name:'ISO 27001',    status:'full',        art:'A.8.15 monitoring, supply chain security'},
+      {name:'SOC 2',        status:'none',        art:'Typically not required in food wholesale'}
+    ]
+  },
+  {
+    name: 'Assurance Lyonnaise',
+    flag: 'FR',
+    desc: 'Life and property insurer, ~3000 employees, Lyon. DORA applies to insurers under Solvency II.',
+    surprise: 'Insurance underwriting AI falls under EU AI Act Annex III as a high-risk system &mdash; the same category as medical diagnosis AI. An insurer using AI to set premiums or deny claims must comply with Art. 9 risk management, Art. 13 transparency, and Art. 15 robustness. Most insurers have not yet mapped this.',
+    frameworks: [
+      {name:'DORA',         status:'full',        art:'Insurance undertaking under Solvency II in scope'},
+      {name:'NIS2',         status:'full',        art:'Annex I &mdash; financial sector essential entity'},
+      {name:'EU AI Act',    status:'full',        art:'Annex III &mdash; insurance underwriting, life pricing AI'},
+      {name:'GDPR',         status:'full',        art:'Art. 22 automated decisions, Art. 9 health data'},
+      {name:'BSI KRITIS',   status:'none',        art:'Not applicable &mdash; French entity'},
+      {name:'BSI C5',       status:'none',        art:'Not applicable &mdash; French entity'},
+      {name:'ISO 27001',    status:'full',        art:'A.8.15, A.8.34, A.5.19 third-party risk'},
+      {name:'SOC 2',        status:'conditional', art:'If providing services to US institutional clients'}
+    ]
+  },
+  {
+    name: 'MediCampus Bruxelles',
+    flag: 'BE',
+    desc: 'University hospital, ~5000 employees, Brussels. The one that surprises everyone.',
+    surprise: 'A hospital has the same NIS2 essential entity obligations as a bank. It has EU AI Act high-risk AI obligations for any diagnostic support or medical device AI &mdash; the same Annex III category as credit scoring. It has GDPR Article 9 special category obligations for health data &mdash; the strictest tier. And it has zero DORA obligations. Most hospital IT teams have no idea they are NIS2 essential entities.',
+    frameworks: [
+      {name:'DORA',         status:'none',        art:'Not in scope &mdash; healthcare is not financial'},
+      {name:'NIS2',         status:'full',        art:'Annex I &mdash; HEALTHCARE SECTOR essential entity'},
+      {name:'EU AI Act',    status:'full',        art:'Annex III &mdash; medical device AI, diagnostic support'},
+      {name:'GDPR',         status:'full',        art:'Art. 9 SPECIAL CATEGORY &mdash; health data, strictest tier'},
+      {name:'BSI KRITIS',   status:'none',        art:'Not applicable &mdash; Belgian entity'},
+      {name:'BSI C5',       status:'none',        art:'Not applicable &mdash; Belgian entity'},
+      {name:'ISO 27001',    status:'full',        art:'A.8.15 monitoring, A.5.36 compliance with policies'},
+      {name:'SOC 2',        status:'none',        art:'Typically not required in European healthcare'}
+    ]
+  }
+];
+
+function renderMap(idx) {
+  var co = COMPANIES[idx];
+  var out = document.getElementById('jmap-output');
+
+  var legendHtml =
+    '<div class="jmap-legend">' +
+    '<div class="jmap-legend-item"><div class="jmap-legend-dot full"></div>Fully in scope</div>' +
+    '<div class="jmap-legend-item"><div class="jmap-legend-dot conditional"></div>Conditionally applicable</div>' +
+    '<div class="jmap-legend-item"><div class="jmap-legend-dot none"></div>Not in scope</div>' +
+    '</div>';
+
+  var descHtml =
+    '<div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:16px">' +
+    co.desc + '</div>';
+
+  var fwHtml = '<div class="jmap-fw-grid">';
+  for (var i = 0; i < co.frameworks.length; i++) {
+    var fw = co.frameworks[i];
+    var statusLabel = fw.status === 'full' ? 'FULL SCOPE' : fw.status === 'conditional' ? 'CONDITIONAL' : 'NOT IN SCOPE';
+    fwHtml +=
+      '<div class="jmap-fw ' + fw.status + '">' +
+        '<div class="jmap-fw-status">' + statusLabel + '</div>' +
+        '<div class="jmap-fw-name">' + fw.name + '</div>' +
+        '<div class="jmap-fw-art">' + fw.art + '</div>' +
+      '</div>';
+  }
+  fwHtml += '</div>';
+
+  var surpriseHtml = '';
+  if (co.surprise) {
+    surpriseHtml =
+      '<div class="jmap-surprise visible">' +
+        '<div class="jmap-surprise-lbl">&#9888; Why this surprises compliance teams</div>' +
+        '<div class="jmap-surprise-txt">' + co.surprise + '</div>' +
+      '</div>';
+  }
+
+  out.innerHTML = legendHtml + descHtml + fwHtml + surpriseHtml;
+}
+
+// ── Tab switching ────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.getElementById('tab-net').style.display = name === 'net' ? 'block' : 'none';
+  document.getElementById('tab-sw').style.display  = name === 'sw'  ? 'block' : 'none';
+  document.getElementById('tab-btn-net').classList.toggle('active', name === 'net');
+  document.getElementById('tab-btn-sw').classList.toggle('active',  name === 'sw');
+}
+
+function wireCards() {
+  var cards = document.querySelectorAll('.lc');
+  for (var i = 0; i < cards.length; i++) {
+    (function(card) {
+      card.querySelector('.lc-hdr').addEventListener('click', function() {
+        card.classList.toggle('open');
+      });
+    })(cards[i]);
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  updateThemeBtn(currentTheme);
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('umi-theme', t);
+    updateThemeBtn(t);
+  });
+
+  document.getElementById('tab-btn-net').addEventListener('click', function() { switchTab('net'); });
+  document.getElementById('tab-btn-sw').addEventListener('click',  function() { switchTab('sw');  });
+
+  wireCards();
+
+  // Jurisdiction map buttons
+  var mapBtns = document.querySelectorAll('.jmap-btn');
+  for (var i = 0; i < mapBtns.length; i++) {
+    (function(btn, idx) {
+      btn.addEventListener('click', function() {
+        for (var j = 0; j < mapBtns.length; j++) mapBtns[j].classList.remove('selected');
+        btn.classList.add('selected');
+        renderMap(idx);
+      });
+    })(mapBtns[i], parseInt(mapBtns[i].getAttribute('data-idx'), 10));
+  }
+
+  // Pre-select first on load
+  mapBtns[0].classList.add('selected');
+  renderMap(0);
+});
+</script>
+
+</body>
+</html>

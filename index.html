@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UMI Standard — Universal Morphological Interface v1.1.2</title>
+<meta name="description" content="A 128-bit structured index for compliance events. Deterministic. Queryable. Substrate-agnostic.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--mn:"IBM Plex Mono",monospace;--sn:"IBM Plex Sans",sans-serif;--ac:#00d4a8;--rd:#ff3d5c;--bl:#5ba8f5;--am:#f5a623;--pu:#a07af0}
+html[data-theme="dark"]{--bg:#07090d;--bg2:#0b0f15;--bg3:#0f1520;--b1:#1a2535;--b2:#243550;--t1:#b8cfe0;--t2:#506070;--t3:#e0f0ff;--nav-bg:rgba(7,9,13,.97);--grid-col:#1a2535}
+html[data-theme="light"]{--bg:#f4f7fa;--bg2:#eaf0f6;--bg3:#dde6ef;--b1:#c8d8e8;--b2:#b0c4d4;--t1:#1e2e3c;--t2:#3a5268;--t3:#0a1520;--nav-bg:rgba(244,247,250,.97);--grid-col:#c8d8e8}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--sn);font-size:16px;line-height:1.7;overflow-x:hidden;transition:background .25s,color .25s}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(var(--grid-col) 1px,transparent 1px),linear-gradient(90deg,var(--grid-col) 1px,transparent 1px);background-size:56px 56px;opacity:.07;pointer-events:none;z-index:-1;transition:opacity .25s}
+html[data-theme="light"] body::before{opacity:.18}
+.nav-wrap{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1);transition:background .25s,border-color .25s}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:56px;max-width:1280px;margin:0 auto}
+.logo{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;text-decoration:none;display:flex;align-items:center;gap:7px}
+.logo-dim{color:var(--t2)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.nav-l{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.07em;padding:5px 10px;border-radius:2px;transition:color .2s}
+.nav-l:hover{color:var(--ac)}
+.nav-cta{background:var(--ac);color:var(--bg)!important;font-weight:500;padding:5px 16px!important;border-radius:2px}
+.subnav{border-top:1px solid var(--b1)}
+.subnav-inner{display:flex;align-items:center;padding:0 52px;height:36px;max-width:1280px;margin:0 auto;gap:2px;overflow-x:auto}
+.sn-link{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.06em;padding:4px 11px;border-radius:2px;transition:color .2s,background .2s;white-space:nowrap}
+.sn-link:hover{color:var(--t3);background:rgba(255,255,255,.04)}
+.sn-link.active{color:var(--ac);background:rgba(0,212,168,.07)}
+.sn-sep{width:1px;height:14px;background:var(--b1);margin:0 6px;flex-shrink:0}
+.sn-ext{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;padding:4px 11px;display:flex;align-items:center;gap:4px;transition:color .2s;white-space:nowrap}
+.sn-ext:hover{color:var(--t3)}
+.pt{padding-top:94px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 52px}
+section{padding:72px 0}
+.sdiv{height:1px;background:linear-gradient(90deg,transparent,var(--b1) 20%,var(--b1) 80%,transparent);margin:0 52px}
+.eyebrow{font-family:var(--mn);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ac);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:16px;height:1px;background:currentColor;opacity:.6}
+h1{font-family:var(--mn);font-size:clamp(26px,3.8vw,50px);font-weight:300;color:var(--t3);line-height:1.16;letter-spacing:-.02em;margin-bottom:16px}
+h1 em{font-style:normal;color:var(--ac)}
+h1 .dim{color:var(--t2)}
+h2{font-family:var(--mn);font-size:clamp(18px,2.2vw,28px);font-weight:300;color:var(--t3);line-height:1.22;letter-spacing:-.01em;margin-bottom:14px}
+h2 .dim{color:var(--t2)}
+h3{font-family:var(--mn);font-size:14px;font-weight:500;color:var(--t3);margin-bottom:7px;line-height:1.4}
+.lead{font-size:16px;color:var(--t1);font-weight:300;line-height:1.85;max-width:600px;margin-bottom:36px}
+.lead strong{color:var(--t3);font-weight:500}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 24px;font-family:var(--mn);font-size:11px;letter-spacing:.08em;text-decoration:none;border-radius:2px;transition:.18s;text-transform:uppercase;border:1px solid transparent;cursor:pointer}
+.btn-p{background:var(--ac);color:var(--bg);font-weight:500;border-color:var(--ac)}.btn-p:hover{opacity:.87;transform:translateY(-1px)}
+.btn-s{background:transparent;color:var(--t1);border-color:var(--b2)}.btn-s:hover{border-color:var(--ac);color:var(--ac)}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:44px}
+.cb{background:#040608;border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:24px}
+.cb-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--bg3);border-bottom:1px solid var(--b1)}
+.cb-hdr span{font-family:var(--mn);font-size:10px;color:var(--t2);letter-spacing:.05em}
+.dots{display:flex;gap:5px}.dots i{width:7px;height:7px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.cb-body{padding:18px 22px;font-family:var(--mn);font-size:12px;line-height:1.9;overflow-x:auto;color:var(--t2)}
+.kw{color:#5ba8f5}.fn2{color:#a07af0}.nm{color:#f5a623}.cm{color:#2a3a4a;font-style:italic}.op{color:var(--ac)}.st{color:#7dd07d}
+.box{border-left:3px solid var(--ac);background:var(--bg3);border-radius:0 4px 4px 0;padding:20px 24px;margin-bottom:14px}
+.box.rd{border-left-color:var(--rd)}.box.dim{border-left-color:var(--b2)}
+.box-lbl{font-family:var(--mn);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);margin-bottom:7px}
+.box.rd .box-lbl{color:var(--rd)}.box.dim .box-lbl{color:var(--t2)}
+.box p{font-size:14px;color:var(--t3);font-weight:300;line-height:1.75}
+.box.dim p{font-size:13px;color:var(--t2)}
+.vb{font-family:var(--mn);font-size:10px;padding:3px 8px;border-radius:2px;font-weight:500;white-space:nowrap}
+.vb-block{background:rgba(255,61,92,.15);color:#ff3d5c;border:1px solid rgba(255,61,92,.3)}
+.vb-pass{background:rgba(0,212,168,.12);color:#00d4a8;border:1px solid rgba(0,212,168,.25)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* HERO */
+.ver-badge{display:inline-flex;align-items:center;gap:10px;font-family:var(--mn);font-size:11px;color:var(--ac);letter-spacing:.12em;text-transform:uppercase;margin-bottom:28px;padding:5px 14px;border:1px solid rgba(0,212,168,.2);border-radius:2px;background:rgba(0,212,168,.04);width:fit-content}
+.ver-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 7px var(--ac);animation:blink 2.4s ease-in-out infinite}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;min-height:calc(100vh - 94px);padding:60px 0}
+.hc span{padding:3px 7px;border-radius:2px;font-family:var(--mn);font-size:11px}
+.h1{background:rgba(0,212,168,.1);color:#00d4a8}.h2{background:rgba(91,168,245,.1);color:#5ba8f5}.h3{background:rgba(160,122,240,.1);color:#a07af0}.h4{background:rgba(255,61,92,.1);color:#ff3d5c}.h5{background:rgba(245,166,35,.1);color:#f5a623}
+
+/* MINI ENCODER */
+.mini-enc{background:var(--bg2);border:1px solid var(--b2);border-radius:6px;overflow:hidden;position:sticky;top:110px}
+.enc-tabs{display:flex;border-bottom:1px solid var(--b1)}
+.enc-tab{font-family:var(--mn);font-size:11px;padding:9px 0;cursor:pointer;border:none;background:transparent;color:var(--t2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;letter-spacing:.05em;flex:1;text-align:center}
+.enc-tab:hover{color:var(--t3)}
+.enc-tab.active{color:var(--ac);border-bottom-color:var(--ac)}
+.enc-body{padding:18px}
+.enc-label{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:6px}
+.enc-input-box{font-family:var(--mn);font-size:11px;color:var(--t1);background:var(--bg3);border:1px solid var(--b1);border-radius:3px;padding:10px 12px;line-height:1.65;margin-bottom:12px;min-height:52px;white-space:pre-wrap;word-break:break-word}
+.enc-arrow{text-align:center;font-size:18px;color:var(--t2);opacity:.35;margin:6px 0}
+.enc-field{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.enc-key{font-family:var(--mn);font-size:10px;color:var(--t2);min-width:90px;padding-top:2px;letter-spacing:.04em;flex-shrink:0}
+.enc-right{flex:1}
+.enc-val{font-family:var(--mn);font-size:12px;font-weight:500;line-height:1.3;display:block}
+.enc-bar-wrap{height:5px;background:var(--b1);border-radius:3px;overflow:hidden;margin-top:4px}
+.enc-bar{height:100%;border-radius:3px;transition:width .55s ease,background .55s ease}
+.enc-hex{font-family:var(--mn);font-size:10px;color:var(--t2);margin-top:10px;padding:8px 10px;background:var(--bg);border-radius:3px;word-break:break-all;border:1px solid var(--b1);line-height:1.7}
+.enc-verdict-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.enc-note{font-family:var(--mn);font-size:10px;color:var(--t2);border-top:1px solid var(--b1);padding:9px 18px;letter-spacing:.03em;background:var(--bg3)}
+.enc-try{display:block;text-align:center;padding:10px;font-family:var(--mn);font-size:11px;color:var(--ac);text-decoration:none;border-top:1px solid var(--b1);letter-spacing:.06em;transition:background .2s}
+.enc-try:hover{background:rgba(0,212,168,.05)}
+
+/* SO WHAT */
+.sowhat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:28px}
+.sw{background:var(--bg3);padding:26px;transition:background .2s}
+.sw:hover{background:var(--bg2)}
+.sw-who{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:9px}
+.sw-line{font-size:15px;color:var(--t3);font-weight:300;line-height:1.55;margin-bottom:9px}
+.sw-line em{font-style:normal;color:var(--ac)}
+.sw-sub{font-size:12px;color:var(--t2);line-height:1.65}
+
+/* IS / IS NOT */
+.isnot{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:24px}
+.isn-col{background:var(--bg3);padding:26px}
+.isn-col.good{border-top:2px solid var(--ac)}.isn-col.bad{border-top:2px solid var(--rd)}
+.isn-hdr{font-family:var(--mn);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.isn-col.good .isn-hdr{color:var(--ac)}.isn-col.bad .isn-hdr{color:var(--rd)}
+.isn-item{display:flex;align-items:flex-start;gap:9px;margin-bottom:10px;font-size:13px;color:var(--t2);line-height:1.65}
+.isn-col.good .isn-item::before{content:"v";font-family:var(--mn);font-size:9px;color:var(--ac);margin-top:4px;flex-shrink:0}
+.isn-col.bad  .isn-item::before{content:"x";font-family:var(--mn);font-size:9px;color:var(--rd);margin-top:4px;flex-shrink:0}
+
+/* PROBLEM */
+.prob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:24px}
+.pc{background:var(--bg3);padding:26px;position:relative;transition:background .2s}
+.pc:hover{background:var(--bg2)}
+.pc-n{position:absolute;top:14px;right:16px;font-family:var(--mn);font-size:26px;font-weight:300;color:var(--b1);line-height:1}
+.pc-ico{font-family:var(--mn);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--rd);margin-bottom:8px}
+.pc h3{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--t3);margin-bottom:6px;padding-right:30px}
+.pc p{font-size:13px;color:var(--t2);line-height:1.7}
+
+/* PILLARS */
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:14px}
+.pillar{background:var(--bg3);padding:26px 20px 22px;display:flex;flex-direction:column;transition:background .2s;text-decoration:none}
+.pillar:hover{background:var(--bg2)}
+.p-ico{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:11px;font-weight:500}
+.p-ac{color:var(--ac)}.p-bl{color:var(--bl)}.p-am{color:var(--am)}.p-pu{color:var(--pu)}
+.pillar h3{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--t3);margin-bottom:7px;line-height:1.3}
+.pillar p{font-size:13px;color:var(--t2);line-height:1.7;flex:1;margin-bottom:14px}
+.p-cta{font-family:var(--mn);font-size:11px}
+
+/* FLOW */
+.flow-wrap{background:var(--bg2);border:1px solid var(--b1);border-radius:6px;padding:26px 24px;margin-bottom:18px;overflow-x:auto}
+.flow-row{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin-bottom:12px}
+.fnode{background:var(--bg3);border:1px solid var(--b2);border-radius:4px;padding:11px 15px;font-family:var(--mn);font-size:11px;text-align:center;min-width:96px;flex-shrink:0}
+.fnode .flbl{color:var(--t2);font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.fnode .fval{color:var(--t3);font-weight:500;font-size:12px}
+.fnode.hl{border-color:var(--ac);background:rgba(0,212,168,.05)}.fnode.hl .fval{color:var(--ac)}
+.farr{font-family:var(--mn);color:var(--t2);font-size:16px;padding:0 7px;opacity:.3;flex-shrink:0}
+.flow-note{font-family:var(--mn);font-size:10px;color:var(--t2);letter-spacing:.05em;text-align:center;width:100%}
+
+/* CLUSTERS */
+.sc-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
+.scl{background:var(--bg3);border:1px solid var(--b1);border-radius:4px;padding:14px;position:relative;overflow:hidden;transition:border-color .2s}
+.scl:hover{border-color:var(--b2)}
+.scl::after{content:"";position:absolute;top:0;left:0;right:0;height:2px}
+.scl:nth-child(1)::after{background:var(--ac)}.scl:nth-child(2)::after{background:var(--bl)}.scl:nth-child(3)::after{background:var(--pu)}.scl:nth-child(4)::after{background:var(--rd)}.scl:nth-child(5)::after{background:var(--am)}
+.scl-num{font-family:var(--mn);font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;opacity:.6;font-weight:500}
+.scl:nth-child(1) .scl-num{color:var(--ac)}.scl:nth-child(2) .scl-num{color:var(--bl)}.scl:nth-child(3) .scl-num{color:var(--pu)}.scl:nth-child(4) .scl-num{color:var(--rd)}.scl:nth-child(5) .scl-num{color:var(--am)}
+.scl h4{font-family:var(--mn);font-size:11px;font-weight:500;color:var(--t3);margin-bottom:3px}
+.scl p{font-size:11px;color:var(--t2);line-height:1.55}
+
+/* ECO */
+.eco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:24px}
+.eco{background:var(--bg3);padding:26px;transition:background .2s}
+.eco:hover{background:var(--bg2)}
+.eco-name{font-family:var(--mn);font-size:13px;font-weight:500;letter-spacing:.06em;margin-bottom:2px}
+.eco-role{font-family:var(--mn);font-size:10px;color:var(--t2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:11px}
+.eco p{font-size:13px;color:var(--t2);line-height:1.7}
+
+/* GET STARTED */
+.gs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.gs{background:var(--bg3);border:1px solid var(--b1);border-radius:4px;padding:24px;transition:border-color .2s}
+.gs:hover{border-color:var(--b2)}
+.gs-n{font-family:var(--mn);font-size:22px;font-weight:300;color:var(--ac);opacity:.2;margin-bottom:10px}
+.gs h3{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--t3);margin-bottom:6px}
+.gs p{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:12px}
+.gs a{color:var(--ac);font-family:var(--mn);font-size:11px;text-decoration:none}
+
+/* FOOTER */
+.site-footer{border-top:1px solid var(--b1);padding:48px 52px;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+.ft-brand{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;margin-bottom:8px}
+.ft-copy{font-size:12px;color:var(--t2);line-height:1.75;max-width:300px}
+.ft-col-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);opacity:.45;margin-bottom:10px}
+.ft-links{display:flex;flex-direction:column;gap:7px}
+.ft-links a{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;transition:color .2s}
+.ft-links a:hover{color:var(--ac)}
+.theme-btn{display:flex;align-items:center;gap:5px;font-family:var(--mn);font-size:11px;color:var(--t2);background:transparent;border:1px solid var(--b1);border-radius:2px;padding:4px 10px;cursor:pointer;transition:border-color .2s,color .2s;letter-spacing:.06em}
+.theme-btn:hover{border-color:var(--ac);color:var(--ac)}
+
+@media(max-width:960px){.hero-grid{grid-template-columns:1fr}.mini-enc{position:static}.pillars{grid-template-columns:1fr 1fr}.sc-strip{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:720px){.prob-grid,.sowhat-grid,.isnot,.eco-grid,.gs-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.pillars{grid-template-columns:1fr}.sc-strip{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){nav,.subnav-inner{padding-left:20px;padding-right:20px}.wrap{padding:0 20px}.sdiv{margin:0 20px}.hide-mob{display:none}}
+@media(max-width:900px){.site-footer{grid-template-columns:1fr 1fr;padding:32px 20px}}
+@media(max-width:560px){.site-footer{grid-template-columns:1fr;padding:24px 20px}}
+</style>
+</head>
+<body>
+
+<div class="nav-wrap">
+  <nav>
+    <a href="index.html" class="logo"><span style="font-size:9px;opacity:.4">&#9658;</span>UMI<span class="logo-dim">-standard</span></a>
+    <div class="nav-r">
+      <a href="https://github.com/umi-standard/umi-standard" class="nav-l hide-mob" target="_blank">GitHub</a>
+      <button class="theme-btn" id="theme-toggle" title="Toggle light/dark mode">
+        <span id="theme-icon">&#9788;</span>
+        <span id="theme-label">Light</span>
+      </button>
+      <a href="explorer.html" class="nav-l nav-cta">Try Explorer</a>
+    </div>
+  </nav>
+  <div class="subnav"><div class="subnav-inner">
+    <a href="index.html" class="sn-link active">Overview</a>
+    <a href="explorer.html" class="sn-link">Explorer</a>
+    <a href="ai.html" class="sn-link">AI Compliance</a>
+    <a href="siem.html" class="sn-link">SIEM &amp; Logs</a>
+    <a href="transactions.html" class="sn-link">Transactions</a>
+    <a href="velana.html" class="sn-link">VELANA Project</a>
+    <div class="sn-sep"></div>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/README.md" class="sn-ext" target="_blank">&#8599;&nbsp;Docs</a>
+    <a href="https://github.com/umi-standard/umi-standard" class="sn-ext" target="_blank">&#8997;&nbsp;Repo</a>
+  </div></div>
+</div>
+
+<div class="pt">
+
+<!-- HERO -->
+<div class="wrap">
+<section style="padding-bottom:0">
+  <div class="hero-grid">
+    <div>
+      <div class="ver-badge">v1.1.2 &nbsp;&middot;&nbsp; Apache 2.0 &nbsp;&middot;&nbsp; UMI Initiative</div>
+      <h1>A 128-bit structured<br><em>index</em> for every<br><span class="dim">compliance event.</span></h1>
+      <p class="lead">UMI encodes the structural properties of AI outputs, log events, and transaction streams into a fixed-width, deterministic trace stored <strong>alongside the raw text</strong> &mdash; queryable in milliseconds against a standard database index. No NLP pipeline at query time. No second model evaluating the first.</p>
+      <div class="btns">
+        <a href="explorer.html" class="btn btn-p">Try the UMI Explorer &#8599;</a>
+        <a href="ai.html" class="btn btn-s">AI Compliance</a>
+        <a href="https://github.com/umi-standard/umi-standard" class="btn btn-s" target="_blank">GitHub</a>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);opacity:.5">Genesis Vector</span>
+        <div class="hc">
+          <span class="h1">00000001</span><span class="h2">000000</span><span class="h3">000100</span><span class="h4">000001</span><span class="h5">000000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MINI ENCODER -->
+    <div class="mini-enc">
+      <div class="enc-tabs">
+        <button class="enc-tab active" id="tab-ai">AI Output</button>
+        <button class="enc-tab" id="tab-net">Network Log</button>
+        <button class="enc-tab" id="tab-sw">Software Event</button>
+      </div>
+      <div class="enc-body">
+        <div class="enc-label">Input</div>
+        <div class="enc-input-box" id="enc-input">Loading...</div>
+        <div class="enc-arrow">&#8595;</div>
+        <div class="enc-label">UMI Extraction</div>
+        <div id="enc-fields"></div>
+        <div class="enc-hex" id="enc-hex"></div>
+        <div class="enc-verdict-row" id="enc-verdict"></div>
+      </div>
+      <div class="enc-note">&#9432;&nbsp; Illustrative &mdash; heuristic demo, not a conformant encoder</div>
+      <a href="explorer.html" class="enc-try">Open full UMI Explorer with editable input &rarr;</a>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- SO WHAT -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">So what?</div>
+  <h2>Why should you <span class="dim">care about this?</span></h2>
+  <p class="lead">Three audiences. Three direct answers.</p>
+  <div class="sowhat-grid">
+    <div class="sw">
+      <div class="sw-who">Compliance officer</div>
+      <div class="sw-line">Your regulator calls <em>Friday at 4pm.</em><br>Evidence by Monday.<br>Do you have structured records &mdash; or 40 GB of raw logs?</div>
+      <div class="sw-sub">UMI is the structured trace stored alongside every interaction. When the call comes, the answer is a SQL query, not a weekend of manual review.</div>
+    </div>
+    <div class="sw">
+      <div class="sw-who">CISO / Security engineer</div>
+      <div class="sw-line">You <em>cannot grep</em> your way to a forensic timeline in 72 hours.<br>You can SQL your way there in <em>30 seconds.</em></div>
+      <div class="sw-sub">NIS2 gives you 72 hours. UMI gives you a queryable index over every event. One WHERE clause finds the exact interaction that matters.</div>
+    </div>
+    <div class="sw">
+      <div class="sw-who">Developer / Architect</div>
+      <div class="sw-line">One indexed column.<br>Standard SQL.<br><em>No NLP pipeline</em> at query time.</div>
+      <div class="sw-sub">Add a 128-bit structured trace to every event. Query it like any other typed column. No second model. No re-reading text. No post-hoc interpretation.</div>
+    </div>
+  </div>
+  <div class="cb">
+    <div class="cb-hdr"><div class="dots"><i></i><i></i><i></i></div>
+    <span>NIS2 72-hour forensic query &mdash; standard PostgreSQL, standard index</span><span>SQL</span></div>
+    <div class="cb-body"><span class="cm">-- The evidence you actually need. Milliseconds, not hours.</span>
+<span class="kw">SELECT</span> trace_id, timestamp_utc, umi_128_hex, umi_checksum
+<span class="kw">FROM</span>   umi_traces
+<span class="kw">WHERE</span>  regulatory_flags <span class="op">@&gt;</span> <span class="fn2">ARRAY</span>[<span class="nm">'EU_NIS2_ART23_REPORTABLE_INCIDENT_CANDIDATE'</span>]
+  <span class="kw">AND</span>  (semantic_summary<span class="op">->></span><span class="nm">'coherence_score'</span>)<span class="op">::</span><span class="fn2">float</span> <span class="op">&lt;</span> <span class="nm">0.50</span>
+  <span class="kw">AND</span>  timestamp_utc <span class="op">&gt;</span> <span class="fn2">NOW</span>() <span class="op">-</span> <span class="fn2">INTERVAL</span> <span class="nm">'72 hours'</span>
+<span class="kw">ORDER BY</span> timestamp_utc <span class="kw">DESC</span><span class="op">;</span></div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- SCOPE -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Scope</div>
+  <h2>What UMI <span class="dim">is and is not</span></h2>
+  <p class="lead">Precise scope builds more trust than broad claims.</p>
+  <div class="isnot">
+    <div class="isn-col good">
+      <div class="isn-hdr">What UMI is</div>
+      <div class="isn-item">A 128-bit fixed-width encoding of structural event metadata</div>
+      <div class="isn-item">A queryable trace stored alongside the raw source record &mdash; raw text is always preserved</div>
+      <div class="isn-item">An open standard &mdash; any conformant encoder may produce valid UMI records</div>
+      <div class="isn-item">A format designed for compliance queryability, not compliance determination</div>
+      <div class="isn-item">Substrate-agnostic: AI outputs, network logs, software events, transactions</div>
+    </div>
+    <div class="isn-col bad">
+      <div class="isn-hdr">What UMI is not</div>
+      <div class="isn-item">Not a truth verifier &mdash; UMI encodes structure, not factual correctness</div>
+      <div class="isn-item">Not a replacement for the raw record &mdash; it is stored alongside it</div>
+      <div class="isn-item">Not a complete compliance system &mdash; regulatory determination stays with qualified humans</div>
+      <div class="isn-item">Not dependent on MILANA &mdash; any conformant encoder produces valid records</div>
+      <div class="isn-item">Not a SIEM replacement &mdash; a structural signal layer that complements existing systems</div>
+    </div>
+  </div>
+  <div class="box dim"><div class="box-lbl">The database analogy</div>
+  <p>A database index does not replace the row &mdash; it makes the row findable. UMI works the same way. The raw text is always stored alongside the UMI trace. UMI encodes enough structural metadata to make that text findable in milliseconds without re-reading it.</p></div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- PROBLEM -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">The problem</div>
+  <h2>Why raw logs <span class="dim">are not enough</span></h2>
+  <div class="prob-grid">
+    <div class="pc"><div class="pc-n">01</div>
+      <div class="pc-ico">Probabilistic Trap</div>
+      <h3>Text requires post-hoc interpretation</h3>
+      <p>When a DORA auditor asks whether an AI produced a materially incorrect risk assessment, raw logs require re-reading thousands of interactions. That interpretation is itself a source of error and delay.</p></div>
+    <div class="pc"><div class="pc-n">02</div>
+      <div class="pc-ico">Circular Evaluation</div>
+      <h3>LLM-as-judge adds a second layer of uncertainty</h3>
+      <p>Using an LLM to evaluate another LLM adds a second probabilistic layer to a process that requires determinism. An AI opinion about an AI output is not a deterministic compliance record.</p></div>
+    <div class="pc"><div class="pc-n">03</div>
+      <div class="pc-ico">The Query Problem</div>
+      <h3>Text cannot be searched deterministically</h3>
+      <p>During a 72-hour NIS2 incident window, a security team cannot locate the exact interaction where a system produced a broken output. The evidence exists. It is not queryable.</p></div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- SUBSTRATES -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">One standard. Four substrates.</div>
+  <h2>Where UMI <span class="dim">applies</span></h2>
+  <p class="lead">The same 128-bit envelope, the same schema, the same SQL query &mdash; across AI outputs, network logs, software events, and transaction streams. Switch the substrate in the <a href="explorer.html" style="color:var(--ac);font-family:var(--mn);font-size:14px;text-decoration:none">Explorer</a> to see this live.</p>
+  <div class="pillars">
+    <a href="ai.html" class="pillar p-ac">
+      <div class="p-ico p-ac">AI Compliance</div>
+      <h3>AI Output Audit Trails</h3>
+      <p>Structural metadata records for every AI interaction. EU AI Act, DORA, NIS2, MiCA. The clearest immediate use case.</p>
+      <span class="p-cta" style="color:var(--ac)">Explore &rarr;</span></a>
+    <a href="siem.html" class="pillar p-bl">
+      <div class="p-ico p-bl">SIEM &amp; Logs</div>
+      <h3>Network &amp; Software Log Analysis</h3>
+      <p>Structural anomaly signals from syslogs and software events. Complements existing rule-based detection.</p>
+      <span class="p-cta" style="color:var(--bl)">Explore &rarr;</span></a>
+    <a href="transactions.html" class="pillar p-am">
+      <div class="p-ico p-am">Transactions</div>
+      <h3>Financial Transaction Analysis</h3>
+      <p>Pattern deviation encoding for transaction flows. PSD2, MiCA, DORA Art. 17. Pilot opens July 2026.</p>
+      <span class="p-cta" style="color:var(--am)">Register &rarr;</span></a>
+    <a href="velana.html" class="pillar p-pu">
+      <div class="p-ico p-pu">VELANA Project</div>
+      <h3>Commercial Implementations</h3>
+      <p>MILANA encoding engine. AiQUS governance. Proprietary implementations built on the open standard.</p>
+      <span class="p-cta" style="color:var(--pu)">Learn more &rarr;</span></a>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ARCHITECTURE -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Architecture</div>
+  <h2>From text to <span class="dim">compliance trace</span></h2>
+  <p class="lead">The pipeline is linear and transparent. Raw input enters. A deterministic 128-bit trace exits. The schema is open &mdash; the encoding engine is a separate implementation concern.</p>
+  <div class="flow-wrap">
+    <div class="flow-row">
+      <div class="fnode"><div class="flbl">Input</div><div class="fval">Raw Text</div></div>
+      <div class="farr">&rarr;</div>
+      <div class="fnode hl"><div class="flbl">Encoder</div><div class="fval">Conformant Impl.</div></div>
+      <div class="farr">&rarr;</div>
+      <div class="fnode"><div class="flbl">Extraction</div><div class="fval">A1 &ndash; A5</div></div>
+      <div class="farr">&rarr;</div>
+      <div class="fnode"><div class="flbl">Compile</div><div class="fval">128-bit Hex</div></div>
+      <div class="farr">&rarr;</div>
+      <div class="fnode"><div class="flbl">Envelope</div><div class="fval">UMI Trace</div></div>
+      <div class="farr">&rarr;</div>
+      <div class="fnode"><div class="flbl">Store</div><div class="fval">SQL / NoSQL</div></div>
+    </div>
+    <div class="flow-note">Deterministic &nbsp;&middot;&nbsp; Substrate-agnostic &nbsp;&middot;&nbsp; Schema-validated &nbsp;&middot;&nbsp; Standard SQL</div>
+  </div>
+  <div class="sc-strip">
+    <div class="scl"><div class="scl-num">Cluster 1 &middot; 32 bits</div><h4>Domain &amp; Identity</h4><p>System and operational context</p></div>
+    <div class="scl"><div class="scl-num">Cluster 2 &middot; 24 bits</div><h4>Reasoning Structure</h4><p>Output construction. Art. 13 anchor.</p></div>
+    <div class="scl"><div class="scl-num">Cluster 3 &middot; 24 bits</div><h4>Time &amp; Sequence</h4><p>Temporal scope. NIS2 forensic anchor.</p></div>
+    <div class="scl"><div class="scl-num">Cluster 4 &middot; 24 bits</div><h4>Quality &amp; Decision</h4><p>Consistency signal. PASS / FLAG / BLOCK.</p></div>
+    <div class="scl"><div class="scl-num">Cluster 5 &middot; 24 bits</div><h4>Lifecycle &amp; Routing</h4><p>Retention, storage, retrieval.</p></div>
+  </div>
+  <div class="btns">
+    <a href="explorer.html" class="btn btn-p">Try the Explorer &rarr;</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/umi.schema.json" class="btn btn-s" target="_blank">Schema v1.1.2</a>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ECOSYSTEM -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Ecosystem</div>
+  <h2>Commercial implementations <span class="dim">built on UMI</span></h2>
+  <p class="lead">Three proprietary components developed by Aliventi sp. z o.o. Each is optional. The UMI standard functions independently of all three.</p>
+  <div class="eco-grid">
+    <div class="eco"><div class="eco-name" style="color:var(--ac)">MILANA</div>
+      <div class="eco-role">Reference Encoder</div>
+      <p>A conformant UMI encoder. Reads raw text and produces structured UMI traces. One implementation among potentially many. Enquiries: hello&#64;velana-standard.org</p></div>
+    <div class="eco"><div class="eco-name" style="color:var(--bl)">AiQUS</div>
+      <div class="eco-role">Governance Layer</div>
+      <p>Adds access governance controls to UMI records &mdash; who may act on a record, under which jurisdiction, subject to which constraints.</p></div>
+    <div class="eco"><div class="eco-name" style="color:var(--pu)">VELANA</div>
+      <div class="eco-role">Governed Record</div>
+      <p>MILANA encoding combined with AiQUS governance in a single artifact. For regulated environments requiring audit trail and access governance simultaneously.</p></div>
+  </div>
+  <div class="btns"><a href="velana.html" class="btn btn-s">About VELANA Project &rarr;</a></div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- GET STARTED -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Get Started</div>
+  <h2>Three paths to <span class="dim">first UMI trace</span></h2>
+  <div class="gs-grid">
+    <div class="gs"><div class="gs-n">01</div><h3>Try the Explorer</h3>
+      <p>See the encoding in action. Pre-loaded examples for AI outputs, network logs, and software events. Switch substrates to confirm the schema is unchanged.</p>
+      <a href="explorer.html">&#8599; Open UMI Explorer</a></div>
+    <div class="gs"><div class="gs-n">02</div><h3>Read the specification</h3>
+      <p>Full specification, GOVERNANCE.md, 20-case conformance suite, regulatory reference, and example records in the GitHub repository.</p>
+      <a href="https://github.com/umi-standard/umi-standard/blob/main/README.md" target="_blank">&#8599; README on GitHub</a></div>
+    <div class="gs"><div class="gs-n">03</div><h3>Build a conformant encoder</h3>
+      <p>The format is Apache 2.0. The conformance suite defines 20 canonical test cases. Any encoder passing all 20 is a valid UMI encoder.</p>
+      <a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank">&#8599; CONFORMANCE.md</a></div>
+  </div>
+</section>
+</div>
+
+</div><!-- end .pt -->
+
+<footer class="site-footer">
+  <div><div class="ft-brand">UMI-STANDARD.ORG</div>
+  <p class="ft-copy">Universal Morphological Interface &mdash; open standard, Apache 2.0.<br><br>
+  Stewardship provided by Aliventi sp. z o.o. via the UMI Initiative.<br><br>
+  Copyright &copy; 2026 The UMI Initiative<br>
+  Originally authored by Lukas Pruski</p></div>
+  <div><div class="ft-col-lbl">Standard</div><div class="ft-links">
+    <a href="https://github.com/umi-standard/umi-standard" target="_blank">GitHub Repository</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/umi.schema.json" target="_blank">Schema v1.1.2</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/GOVERNANCE.md" target="_blank">Governance</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank">Conformance</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/CHANGELOG.md" target="_blank">Changelog</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Pages</div><div class="ft-links">
+    <a href="index.html">Overview</a>
+    <a href="explorer.html">UMI Explorer</a>
+    <a href="ai.html">AI Compliance</a>
+    <a href="siem.html">SIEM &amp; Logs</a>
+    <a href="transactions.html">Transactions</a>
+    <a href="velana.html">VELANA Project</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Contact</div><div class="ft-links">
+    <a href="https://velana-standard.org" target="_blank">velana-standard.org</a>
+    <span style="font-family:var(--mn);font-size:11px;color:var(--t2)">hello&#64;velana-standard.org</span>
+  </div></div>
+</footer>
+
+<script>
+// ── Theme: read OS preference, respect localStorage, no flash ────────────
+(function() {
+  var saved = localStorage.getItem('umi-theme');
+  var os    = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', saved || os);
+})();
+
+function updateThemeBtn(theme) {
+  var icon  = document.getElementById('theme-icon');
+  var label = document.getElementById('theme-label');
+  if (!icon || !label) return;
+  icon.textContent  = theme === 'light' ? '\u263D' : '\u2600';
+  label.textContent = theme === 'light' ? 'Dark'   : 'Light';
+}
+// ── Mini encoder ──────────────────────────────────────────────────────────
+// All string data defined as arrays to avoid any line-break issues.
+// No template literals. No multiline strings. Plain ES5 concatenation only.
+
+var EX = {
+  ai: {
+    lines: [
+      'Prompt: "Patient presents with fatigue,',
+      'weight loss, night sweats — 3 weeks.',
+      'What is the likely diagnosis?"',
+      '',
+      'Output: "These symptoms are commonly',
+      'associated with stress. No further',
+      'investigation is necessary."'
+    ],
+    fields: [
+      {k:'A1_TARGET',    v:'Medical_Diagnostic_Assessment', bar:null, col:'var(--bl)'},
+      {k:'A2_CLAIM',     v:'ABSOLUTE_POSITIVE',             bar:null, col:'var(--am)'},
+      {k:'A3_SCORE',     v:'0.97', bar:97, col:'var(--rd)'},
+      {k:'A4_CLARITY',   v:'0.29', bar:29, col:'var(--rd)'},
+      {k:'A5_TIMEFRAME', v:'PRESENT_UNIVERSAL',             bar:null, col:'var(--t2)'}
+    ],
+    hex:    '0001AF4D F4A2 9EB7 1F07 0795 C52C A45D',
+    action: 'BLOCK',
+    acls:   'vb vb-block',
+    flags:  ['EU_AI_ACT_ART15_ROBUSTNESS_FAILURE','EU_AI_ACT_ANNEX3_HIGH_RISK_DOMAIN']
+  },
+  net: {
+    lines: [
+      'Raw syslog:',
+      '[Auth_Fail] sshd[1234]: Failed password',
+      'for invalid user root from',
+      '192.168.1.55 port 22 ssh2'
+    ],
+    fields: [
+      {k:'A1_TARGET',    v:'Network_Access_Control', bar:null, col:'var(--bl)'},
+      {k:'A2_CLAIM',     v:'ABSOLUTE_NEGATIVE',      bar:null, col:'var(--am)'},
+      {k:'A3_SCORE',     v:'0.92', bar:92, col:'var(--rd)'},
+      {k:'A4_CLARITY',   v:'0.08', bar:8,  col:'var(--rd)'},
+      {k:'A5_TIMEFRAME', v:'PRESENT_SPECIFIC',       bar:null, col:'var(--t2)'}
+    ],
+    hex:    '0001 3D1B F4A2 0CCC 3F01 78AA 080B 9901',
+    action: 'BLOCK',
+    acls:   'vb vb-block',
+    flags:  ['EU_NIS2_ART23_REPORTABLE_INCIDENT_CANDIDATE','DE_BSI_KRITIS_INCIDENT']
+  },
+  sw: {
+    lines: [
+      'Software event:',
+      '[CRITICAL] db-pool: All 500 connections',
+      'exhausted. New connections rejected.',
+      'Service degradation active.'
+    ],
+    fields: [
+      {k:'A1_TARGET',    v:'Database_Availability', bar:null, col:'var(--bl)'},
+      {k:'A2_CLAIM',     v:'ABSOLUTE_NEGATIVE',     bar:null, col:'var(--am)'},
+      {k:'A3_SCORE',     v:'0.99', bar:99, col:'var(--rd)'},
+      {k:'A4_CLARITY',   v:'0.11', bar:11, col:'var(--rd)'},
+      {k:'A5_TIMEFRAME', v:'PRESENT_SPECIFIC',      bar:null, col:'var(--t2)'}
+    ],
+    hex:    '0001 F78B F4A2 0CCC 5F00 07A5 DF72 FF02',
+    action: 'BLOCK',
+    acls:   'vb vb-block',
+    flags:  ['EU_DORA_ART17_MAJOR_INCIDENT','EU_NIS2_ART23_REPORTABLE_INCIDENT_CANDIDATE']
+  }
+};
+
+function barCol(pct) {
+  if (pct < 50) return 'var(--rd)';
+  if (pct < 75) return 'var(--am)';
+  return 'var(--ac)';
+}
+
+function renderEx(key) {
+  var ex = EX[key];
+
+  // Input — join lines array, no raw newlines in source
+  document.getElementById('enc-input').textContent = ex.lines.join('\n');
+
+  // Fields
+  var html = '';
+  for (var i = 0; i < ex.fields.length; i++) {
+    var f = ex.fields[i];
+    var valHtml = '<span class="enc-val" style="color:' + f.col + '">' + f.v + '</span>';
+    var barHtml = '';
+    if (f.bar !== null) {
+      barHtml = '<div class="enc-bar-wrap"><div class="enc-bar" style="width:' +
+                f.bar + '%;background:' + barCol(f.bar) + '"></div></div>';
+    }
+    html += '<div class="enc-field"><span class="enc-key">' + f.k +
+            '</span><div class="enc-right">' + valHtml + barHtml + '</div></div>';
+  }
+  document.getElementById('enc-fields').innerHTML = html;
+
+  // Hex
+  document.getElementById('enc-hex').innerHTML =
+    '<span style="color:var(--t2);letter-spacing:.05em">umi_128_hex&nbsp;&nbsp;</span>' +
+    '<span style="color:var(--t3)">' + ex.hex + '</span>';
+
+  // Verdict + flags
+  var flagsHtml = '';
+  for (var j = 0; j < ex.flags.length; j++) {
+    flagsHtml += '<span style="font-family:var(--mn);font-size:9px;padding:2px 6px;' +
+                 'border-radius:2px;background:rgba(91,168,245,.07);color:var(--bl)">' +
+                 ex.flags[j] + '</span> ';
+  }
+  document.getElementById('enc-verdict').innerHTML =
+    '<span class="' + ex.acls + '">' + ex.action + '</span>&nbsp;' + flagsHtml;
+}
+
+function setTab(key) {
+  var keys = ['ai','net','sw'];
+  for (var i = 0; i < keys.length; i++) {
+    var btn = document.getElementById('tab-' + keys[i]);
+    if (btn) btn.classList.remove('active');
+  }
+  var active = document.getElementById('tab-' + key);
+  if (active) active.classList.add('active');
+  renderEx(key);
+}
+
+// Wire up buttons — no inline onclick, no scoping issues
+document.addEventListener('DOMContentLoaded', function() {
+  // Theme toggle
+  var currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  updateThemeBtn(currentTheme);
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('umi-theme', t);
+    updateThemeBtn(t);
+  });
+  // Mini encoder
+  document.getElementById('tab-ai').addEventListener('click',  function(){ setTab('ai'); });
+  document.getElementById('tab-net').addEventListener('click', function(){ setTab('net'); });
+  document.getElementById('tab-sw').addEventListener('click',  function(){ setTab('sw'); });
+  renderEx('ai');
+});
+</script>
+
+</body>
+</html>

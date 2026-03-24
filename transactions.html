@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UMI Standard — Financial Transactions</title>
+<meta name="description" content="Transaction pattern deviation detection via UMI. PSD2, MiCA, GDPR Art. 22, DORA Art. 17. Pilot programme opens July 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── THEME ──────────────────────────────────────────────────────────── */
+:root{--mn:"IBM Plex Mono",monospace;--sn:"IBM Plex Sans",sans-serif;--ac:#00d4a8;--rd:#ff3d5c;--bl:#5ba8f5;--am:#f5a623;--pu:#a07af0}
+html[data-theme="dark"]{--bg:#07090d;--bg2:#0b0f15;--bg3:#0f1520;--b1:#1a2535;--b2:#243550;--t1:#b8cfe0;--t2:#506070;--t3:#e0f0ff;--nav-bg:rgba(7,9,13,.97);--grid-col:#1a2535;--code-bg:#040608}
+html[data-theme="light"]{--bg:#f4f7fa;--bg2:#eaf0f6;--bg3:#dde6ef;--b1:#c8d8e8;--b2:#b0c4d4;--t1:#1e2e3c;--t2:#3a5268;--t3:#0a1520;--nav-bg:rgba(244,247,250,.97);--grid-col:#c8d8e8;--code-bg:#e2eaf2}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--sn);font-size:16px;line-height:1.7;overflow-x:hidden;transition:background .25s,color .25s}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(var(--grid-col) 1px,transparent 1px),linear-gradient(90deg,var(--grid-col) 1px,transparent 1px);background-size:56px 56px;opacity:.07;pointer-events:none;z-index:-1;transition:opacity .25s}
+html[data-theme="light"] body::before{opacity:.18}
+/* ── NAV ──────────────────────────────────────────────────────────── */
+.nav-wrap{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1);transition:background .25s,border-color .25s}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:56px;max-width:1280px;margin:0 auto}
+.logo{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;text-decoration:none;display:flex;align-items:center;gap:7px}
+.logo-dim{color:var(--t2)}
+.nav-r{display:flex;align-items:center;gap:6px}
+.nav-l{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.07em;padding:5px 10px;border-radius:2px;transition:color .2s}
+.nav-l:hover{color:var(--ac)}
+.nav-cta{background:var(--ac);color:var(--bg)!important;font-weight:500;padding:5px 16px!important;border-radius:2px}
+.theme-btn{display:flex;align-items:center;gap:5px;font-family:var(--mn);font-size:11px;color:var(--t2);background:transparent;border:1px solid var(--b1);border-radius:2px;padding:4px 10px;cursor:pointer;transition:border-color .2s,color .2s;letter-spacing:.06em}
+.theme-btn:hover{border-color:var(--ac);color:var(--ac)}
+.subnav{border-top:1px solid var(--b1)}
+.subnav-inner{display:flex;align-items:center;padding:0 52px;height:36px;max-width:1280px;margin:0 auto;gap:2px;overflow-x:auto}
+.sn-link{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.06em;padding:4px 11px;border-radius:2px;transition:color .2s,background .2s;white-space:nowrap}
+.sn-link:hover{color:var(--t3);background:rgba(0,0,0,.04)}
+.sn-link.active{color:var(--am);background:rgba(245,166,35,.07)}
+.sn-sep{width:1px;height:14px;background:var(--b1);margin:0 6px;flex-shrink:0}
+.sn-ext{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;padding:4px 11px;display:flex;align-items:center;gap:4px;transition:color .2s;white-space:nowrap}
+.sn-ext:hover{color:var(--t3)}
+/* ── LAYOUT ──────────────────────────────────────────────────────── */
+.pt{padding-top:94px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 52px}
+section{padding:72px 0}
+.sdiv{height:1px;background:linear-gradient(90deg,transparent,var(--b1) 20%,var(--b1) 80%,transparent);margin:0 52px}
+/* ── TYPE ──────────────────────────────────────────────────────────── */
+.eyebrow{font-family:var(--mn);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--am);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:16px;height:1px;background:currentColor;opacity:.6}
+h1{font-family:var(--mn);font-size:clamp(26px,3.8vw,50px);font-weight:300;color:var(--t3);line-height:1.16;letter-spacing:-.02em;margin-bottom:16px}
+h1 em{font-style:normal;color:var(--am)}
+h1 .dim{color:var(--t2)}
+h2{font-family:var(--mn);font-size:clamp(18px,2.2vw,28px);font-weight:300;color:var(--t3);line-height:1.22;letter-spacing:-.01em;margin-bottom:14px}
+h2 .dim{color:var(--t2)}
+.lead{font-size:16px;color:var(--t1);font-weight:300;line-height:1.85;max-width:640px;margin-bottom:32px}
+.lead strong{color:var(--t3);font-weight:500}
+/* ── BUTTONS ──────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 24px;font-family:var(--mn);font-size:11px;letter-spacing:.08em;text-decoration:none;border-radius:2px;transition:.18s;text-transform:uppercase;border:1px solid transparent;cursor:pointer}
+.btn-am{background:var(--am);color:var(--bg);font-weight:500;border-color:var(--am)}.btn-am:hover{opacity:.87;transform:translateY(-1px)}
+.btn-s{background:transparent;color:var(--t1);border-color:var(--b2)}.btn-s:hover{border-color:var(--am);color:var(--am)}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px}
+/* ── CODE ──────────────────────────────────────────────────────────── */
+.cb{background:var(--code-bg);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:20px}
+.cb-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--bg3);border-bottom:1px solid var(--b1)}
+.cb-hdr span{font-family:var(--mn);font-size:10px;color:var(--t2);letter-spacing:.05em}
+.dots{display:flex;gap:5px}.dots i{width:7px;height:7px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.cb-body{padding:16px 20px;font-family:var(--mn);font-size:12px;line-height:1.9;overflow-x:auto;color:var(--t2)}
+.kw{color:#5ba8f5}.fn2{color:#a07af0}.nm{color:#f5a623}.cm{color:#4a6070;font-style:italic}.op{color:var(--ac)}.st{color:#7dd07d}
+/* ── CALLOUT ──────────────────────────────────────────────────────── */
+.box{border-left:3px solid var(--am);background:var(--bg3);border-radius:0 4px 4px 0;padding:20px 24px;margin-bottom:14px;transition:background .25s}
+.box.dim{border-left-color:var(--b2)}.box.ac{border-left-color:var(--ac)}.box.rd{border-left-color:var(--rd)}.box.pu{border-left-color:var(--pu)}
+.box-lbl{font-family:var(--mn);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--am);margin-bottom:7px}
+.box.dim .box-lbl{color:var(--t2)}.box.ac .box-lbl{color:var(--ac)}.box.pu .box-lbl{color:var(--pu)}
+.box p{font-size:14px;color:var(--t3);font-weight:300;line-height:1.75}
+.box.dim p{font-size:13px;color:var(--t2)}
+/* ── SO WHAT ──────────────────────────────────────────────────────── */
+.sowhat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:28px;transition:background .25s,border-color .25s}
+.sw{background:var(--bg3);padding:26px;transition:background .25s}
+.sw:hover{background:var(--bg2)}
+.sw-who{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:9px}
+.sw-line{font-size:15px;color:var(--t3);font-weight:300;line-height:1.55;margin-bottom:9px}
+.sw-line em{font-style:normal;color:var(--am)}
+.sw-sub{font-size:12px;color:var(--t2);line-height:1.65}
+/* ── HARMONIZED ───────────────────────────────────────────────────── */
+.harm-box{background:var(--bg3);border:1px solid var(--b1);border-radius:6px;padding:22px;margin-bottom:22px;transition:background .25s}
+.harm-scenario{font-family:var(--mn);font-size:12px;color:var(--t2);background:var(--bg2);border:1px solid var(--b1);border-radius:3px;padding:11px 14px;margin-bottom:14px;line-height:1.7;transition:background .25s}
+.harm-scenario strong{color:var(--t3)}
+.harm-badge-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:10px}
+.harm-badge{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--b2);border-radius:3px;padding:7px 11px;min-width:130px;transition:border-color .2s,background .25s}
+.harm-badge:hover{border-color:var(--am)}
+.harm-badge-type{font-family:var(--mn);font-size:9px;padding:1px 5px;border-radius:2px;width:fit-content;margin-bottom:4px}
+.hw-ext{background:rgba(245,166,35,.1);color:var(--am)}
+.hw-int{background:rgba(160,122,240,.1);color:var(--pu)}
+.harm-badge-name{font-family:var(--mn);font-size:11px;font-weight:500;color:var(--t3);margin-bottom:2px}
+.harm-badge-art{font-family:var(--mn);font-size:10px;color:var(--t2)}
+.harm-arrow{font-family:var(--mn);font-size:18px;color:var(--t2);opacity:.3;align-self:center}
+.harm-note{font-size:13px;color:var(--t2);line-height:1.7;margin-top:10px;padding-top:10px;border-top:1px solid var(--b1)}
+.harm-note strong{color:var(--am);font-family:var(--mn);font-size:11px;letter-spacing:.04em}
+/* ── USE CASES ────────────────────────────────────────────────────── */
+.uc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:24px;transition:background .25s,border-color .25s}
+.uc{background:var(--bg3);padding:24px;transition:background .25s}
+.uc:hover{background:var(--bg2)}
+.uc-ico{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--am);margin-bottom:10px;font-weight:500}
+.uc h3{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--t3);margin-bottom:6px}
+.uc p{font-size:13px;color:var(--t2);line-height:1.7}
+/* ── REGULATORY PILLS ─────────────────────────────────────────────── */
+.rp-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}
+.rp{background:var(--bg3);border:1px solid var(--b1);border-radius:3px;padding:9px 14px;font-family:var(--mn);font-size:11px;transition:border-color .2s,background .25s}
+.rp:hover{border-color:var(--am);background:var(--bg2)}
+.rj{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.jeu{color:#6ab0ff}.juk{color:#ff7070}.jus{color:#ffb050}
+.rn{color:var(--t3);font-weight:500}.ra{font-size:10px;color:var(--t2);margin-top:2px}
+/* ── PILOT BADGE ──────────────────────────────────────────────────── */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.pilot-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mn);font-size:11px;color:var(--am);padding:6px 14px;background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:3px;margin-bottom:22px}
+.pilot-dot{width:7px;height:7px;border-radius:50%;background:var(--am);box-shadow:0 0 6px var(--am);animation:blink 2s ease-in-out infinite;flex-shrink:0}
+/* ── COUNTDOWN ────────────────────────────────────────────────────── */
+.cd-row{display:flex;align-items:center;gap:18px;margin-bottom:28px;flex-wrap:wrap}
+.cd-b{text-align:center}
+.cd-n{font-family:var(--mn);font-size:36px;font-weight:300;color:var(--am);line-height:1;display:block}
+.cd-l{font-family:var(--mn);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);margin-top:3px}
+.cd-s{font-family:var(--mn);font-size:26px;color:var(--b2);align-self:flex-start;padding-top:5px}
+/* ── REGISTRATION FORM ────────────────────────────────────────────── */
+.int-box{background:var(--bg3);border:1px solid rgba(245,166,35,.2);border-radius:6px;padding:26px;transition:background .25s}
+.int-box h3{font-family:var(--mn);font-size:14px;font-weight:400;color:var(--t3);margin-bottom:7px}
+.int-box p{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:14px}
+.if{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.if input{background:var(--bg2);border:1px solid var(--b2);border-radius:2px;color:var(--t1);font-family:var(--mn);font-size:12px;padding:9px 13px;outline:none;transition:border-color .2s,background .25s}
+.if input:focus{border-color:var(--am)}.if input::placeholder{color:var(--t2);opacity:.6}
+/* ── ROADMAP ──────────────────────────────────────────────────────── */
+.rm{position:relative;padding-left:24px;margin-bottom:32px}
+.rm::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--am),var(--b1))}
+.rm-item{position:relative;margin-bottom:22px}
+.rm-item::before{content:"";position:absolute;left:-19px;top:6px;width:9px;height:9px;border-radius:50%;border:2px solid var(--am);background:var(--bg)}
+.rm-item.done::before{background:var(--am)}
+.rm-item.now::before{background:var(--am);box-shadow:0 0 9px var(--am);animation:blink 2s ease-in-out infinite}
+.rm-date{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--am);margin-bottom:3px}
+.rm-item.done .rm-date{color:var(--t2)}
+.rm-ttl{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--t3);margin-bottom:3px}
+.rm-desc{font-size:13px;color:var(--t2);line-height:1.65}
+/* ── FOOTER ──────────────────────────────────────────────────────── */
+.site-footer{border-top:1px solid var(--b1);padding:48px 52px;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;transition:border-color .25s}
+.ft-brand{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;margin-bottom:8px}
+.ft-copy{font-size:12px;color:var(--t2);line-height:1.75;max-width:300px}
+.ft-col-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);opacity:.45;margin-bottom:10px}
+.ft-links{display:flex;flex-direction:column;gap:7px}
+.ft-links a{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;transition:color .2s}
+.ft-links a:hover{color:var(--ac)}
+@media(max-width:900px){.sowhat-grid{grid-template-columns:1fr}.site-footer{grid-template-columns:1fr 1fr;padding:32px 20px}}
+@media(max-width:720px){.uc-grid{grid-template-columns:1fr 1fr}.harm-badge-row{flex-direction:column}}
+@media(max-width:768px){nav,.subnav-inner{padding-left:20px;padding-right:20px}.wrap{padding:0 20px}.sdiv{margin:0 20px}.hide-mob{display:none}}
+@media(max-width:560px){.site-footer{grid-template-columns:1fr;padding:24px 20px}.uc-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="nav-wrap">
+  <nav>
+    <a href="index.html" class="logo"><span style="font-size:9px;opacity:.4">&#9658;</span>UMI<span class="logo-dim">-standard</span></a>
+    <div class="nav-r">
+      <a href="https://github.com/umi-standard/umi-standard" class="nav-l hide-mob" target="_blank">GitHub</a>
+      <button class="theme-btn" id="theme-toggle" title="Toggle light/dark mode">
+        <span id="theme-icon">&#9788;</span>
+        <span id="theme-label">Light</span>
+      </button>
+      <a href="explorer.html" class="nav-l nav-cta">Try Explorer</a>
+    </div>
+  </nav>
+  <div class="subnav"><div class="subnav-inner">
+    <a href="index.html" class="sn-link">Overview</a>
+    <a href="explorer.html" class="sn-link">Explorer</a>
+    <a href="ai.html" class="sn-link">AI Compliance</a>
+    <a href="siem.html" class="sn-link">SIEM &amp; Logs</a>
+    <a href="transactions.html" class="sn-link active">Transactions</a>
+    <a href="velana.html" class="sn-link">VELANA Project</a>
+    <div class="sn-sep"></div>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/README.md" class="sn-ext" target="_blank">&#8599;&nbsp;Docs</a>
+    <a href="https://github.com/umi-standard/umi-standard" class="sn-ext" target="_blank">&#8997;&nbsp;Repo</a>
+  </div></div>
+</div>
+
+<div class="pt">
+
+<!-- HERO -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Financial Transactions</div>
+  <h1>Transaction pattern deviation<br><em>detection via UMI.</em></h1>
+  <p class="lead">UMI applies to financial transaction streams with <strong>zero schema changes</strong>. A4_CLARITY measures structural deviation from an account's own baseline transaction graph &mdash; the same 128-bit envelope, the same SQL query pattern, the same compliance record format used for AI outputs and log analysis.</p>
+  <div class="btns">
+    <a href="#pilot" class="btn btn-am">Register interest &darr;</a>
+    <a href="explorer.html" class="btn btn-s">Try the Explorer</a>
+    <a href="index.html" class="btn btn-s">About UMI</a>
+  </div>
+  <div class="box dim"><div class="box-lbl">Scope</div>
+  <p>UMI encodes structural deviation signals from transaction data. It does not perform fraud determination, replace AML compliance programmes, or constitute regulatory approval. Interpretation and action remain with qualified compliance teams and qualified humans.</p></div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- SO WHAT -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Why it matters</div>
+  <h2>Three problems UMI <span class="dim">actually solves</span></h2>
+  <div class="sowhat-grid">
+    <div class="sw">
+      <div class="sw-who">Payment Compliance Officer</div>
+      <div class="sw-line">A failed SCA event is simultaneously a <em>PSD2 audit record,</em> a potential <em>DORA incident,</em> and a <em>GDPR Art.22 automated decision log.</em></div>
+      <div class="sw-sub">Today those are three separate evidence trails maintained by three teams. One UMI trace addresses all three simultaneously. When the regulator calls, you run one query &mdash; not three manual exports from three systems.</div>
+    </div>
+    <div class="sw">
+      <div class="sw-who">Fraud &amp; AML Analyst</div>
+      <div class="sw-line">You flagged the transaction. <em>Can you prove you flagged it when it happened</em> &mdash; not after the investigation started?</div>
+      <div class="sw-sub">A UMI trace is a tamper-evident, timestamped, checksummed record. It documents that structural deviation was detected at the moment it occurred. That is the difference between a defensible audit trail and a retrospective reconstruction.</div>
+    </div>
+    <div class="sw">
+      <div class="sw-who">Fintech Architect</div>
+      <div class="sw-line"><em>16 bytes per transaction.</em><br>Standard SQL.<br>No second model. No rule engine refresh cycle.</div>
+      <div class="sw-sub">One indexed column added to your transaction table. Query by A4_CLARITY below threshold. Every anomalous transaction surfaced in milliseconds. Your existing SIEM, your existing database, your existing compliance workflow &mdash; UMI plugs in as a structured signal layer.</div>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cb-hdr"><div class="dots"><i></i><i></i><i></i></div>
+    <span>Find every structural anomaly in a payment batch &mdash; PSD2 and DORA simultaneously</span><span>SQL</span></div>
+    <div class="cb-body"><span class="cm">-- One query. Two regulatory obligations. No manual review.</span>
+<span class="kw">SELECT</span> trace_id, transaction_id, timestamp_utc,
+       (semantic_summary<span class="op">->></span><span class="nm">'coherence_score'</span>)<span class="op">::</span><span class="fn2">float</span>   <span class="kw">AS</span> a4_clarity,
+       regulatory_flags
+<span class="kw">FROM</span>   umi_traces
+<span class="kw">WHERE</span>  substrate <span class="op">=</span> <span class="nm">'transaction'</span>
+  <span class="kw">AND</span>  (semantic_summary<span class="op">->></span><span class="nm">'coherence_score'</span>)<span class="op">::</span><span class="fn2">float</span> <span class="op">&lt;</span> <span class="nm">0.50</span>
+  <span class="kw">AND</span>  timestamp_utc <span class="op">&gt;</span> <span class="fn2">NOW</span>() <span class="op">-</span> <span class="fn2">INTERVAL</span> <span class="nm">'24 hours'</span>
+<span class="kw">ORDER BY</span> a4_clarity <span class="kw">ASC</span><span class="op">;</span>
+<span class="cm">-- Returns: DORA threshold candidates AND PSD2 anomaly log.</span>
+<span class="cm">-- Same trace. Same query. Both obligations covered.</span></div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- HARMONIZED CONTROLS -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Harmonized controls</div>
+  <h2>One transaction event. <span class="dim">Every framework that applies.</span></h2>
+  <p class="lead">A single payment processing failure can simultaneously implicate DORA, PSD2, GDPR Article 22, and your ISO 27001 audit log. One UMI trace addresses all of them &mdash; your compliance team, your fraud team, and your internal auditors pull from the same record.</p>
+
+  <div class="harm-box">
+    <div style="font-family:var(--mn);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--am);margin-bottom:12px">Real scenario &mdash; one transaction event, one trace, all of this satisfied</div>
+    <div class="harm-scenario">
+      An AI-assisted credit scoring system at a European bank flags a mortgage application as high-risk and declines it automatically. The model's A4_CLARITY score is 0.19 &mdash; the conclusion is not supported by the stated premises.
+      <strong>One UMI trace. Every framework below receives its required evidence simultaneously.</strong>
+    </div>
+    <div class="harm-badge-row">
+      <div class="harm-badge"><span class="harm-badge-type hw-ext">External</span><div class="harm-badge-name">GDPR Art. 22</div><div class="harm-badge-art">Automated decision record &mdash; right to explanation</div></div>
+      <div class="harm-badge"><span class="harm-badge-type hw-ext">External</span><div class="harm-badge-name">EU AI Act</div><div class="harm-badge-art">Annex III &mdash; credit scoring high-risk AI</div></div>
+      <div class="harm-badge"><span class="harm-badge-type hw-ext">External</span><div class="harm-badge-name">DORA</div><div class="harm-badge-art">Art. 17 &middot; ICT incident if system failure</div></div>
+      <div class="harm-badge"><span class="harm-badge-type hw-ext">External</span><div class="harm-badge-name">EBA Guidelines</div><div class="harm-badge-art">Model risk &middot; Credit decision audit trail</div></div>
+      <div class="harm-arrow">&rarr;</div>
+      <div class="harm-badge" style="border-color:var(--pu)"><span class="harm-badge-type hw-int">Internal</span><div class="harm-badge-name">ISO 27001</div><div class="harm-badge-art">A.8.34 &middot; Audit logging</div></div>
+      <div class="harm-badge" style="border-color:var(--pu)"><span class="harm-badge-type hw-int">Internal</span><div class="harm-badge-name">SOC 2</div><div class="harm-badge-art">CC7.2 &middot; System monitoring</div></div>
+    </div>
+    <div class="harm-note">
+      <strong>What this means for your compliance team.</strong>
+      The GDPR team needs an Art. 22 automated decision record. The AI governance team needs an EU AI Act Annex III audit log. The DORA team needs to assess whether this constitutes an ICT incident. The ISO 27001 auditor needs an A.8.34 logging entry. Today: four separate exports from four separate systems. With UMI: one SQL query on one table, one tamper-evident record satisfying all four.
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- USE CASES -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Use Cases</div>
+  <h2>Six transaction <span class="dim">analysis domains</span></h2>
+  <div class="uc-grid">
+    <div class="uc"><div class="uc-ico">Payment Anomaly</div><h3>Transaction Pattern Deviation</h3><p>A4_CLARITY measures structural deviation from the account's own baseline &mdash; amount, frequency, counterparty, geography, time of day. One tunable threshold, deterministic output.</p></div>
+    <div class="uc"><div class="uc-ico">Bank Statements</div><h3>Statement Coherence</h3><p>Structural properties from statement sequences &mdash; income step changes, circular payment patterns. Every analysis is a GDPR Art. 22 automated decision record by design.</p></div>
+    <div class="uc"><div class="uc-ico">AML / CFT</div><h3>Structuring Signal</h3><p>Structural deviation signal for transaction structuring patterns. A supplementary signal alongside existing AML programmes &mdash; not a replacement. Adds a queryable audit layer to existing detection.</p></div>
+    <div class="uc"><div class="uc-ico">DORA Art. 17</div><h3>ICT Payment Incident</h3><p>Classifies payment processing failures as potential DORA major ICT incidents &mdash; duplicate transactions, settlement failures, reconciliation gaps. The UMI trace is the classification evidence.</p></div>
+    <div class="uc"><div class="uc-ico">PSD2</div><h3>Authentication Anomaly</h3><p>Authentication patterns deviating from account baseline. The UMI trace is the PSD2 Art. 98 strong customer authentication audit record &mdash; timestamped and checksummed at the moment of detection.</p></div>
+    <div class="uc"><div class="uc-ico">MiCA</div><h3>Crypto-Asset Transfer</h3><p>Structural deviation signals for stablecoin and crypto-asset flows. MiCA Art. 19 communication integrity record alongside market integrity monitoring &mdash; same schema, no extra infrastructure.</p></div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- REGULATORY COVERAGE -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Regulatory Coverage</div>
+  <h2>Frameworks addressed <span class="dim">in transaction records</span></h2>
+  <div class="rp-row">
+    <div class="rp"><div class="rj jeu">EU</div><div class="rn">PSD2</div><div class="ra">Art. 98 &middot; Strong Customer Authentication audit trail</div></div>
+    <div class="rp"><div class="rj jeu">EU</div><div class="rn">MiCA</div><div class="ra">Art. 19 &middot; Market integrity &middot; Communication record</div></div>
+    <div class="rp"><div class="rj jeu">EU</div><div class="rn">GDPR</div><div class="ra">Art. 22 &middot; Automated decision-making record</div></div>
+    <div class="rp"><div class="rj jeu">EU</div><div class="rn">DORA</div><div class="ra">Art. 17 &middot; Major ICT incident classification</div></div>
+    <div class="rp"><div class="rj jeu">EU</div><div class="rn">EU AI Act</div><div class="ra">Annex III &middot; Credit scoring &middot; Fraud detection AI</div></div>
+    <div class="rp"><div class="rj juk">UK</div><div class="rn">FCA Consumer Duty</div><div class="ra">Payment outcome monitoring &middot; Foreseeable harm</div></div>
+    <div class="rp"><div class="rj jus">US</div><div class="rn">FFIEC</div><div class="ra">AI in financial services &middot; Model risk</div></div>
+  </div>
+  <div class="box ac"><div class="box-lbl">One record. Multiple obligations.</div>
+  <p>A single UMI transaction trace simultaneously addresses the DORA ICT incident register, the GDPR Art. 22 automated decision log, the EU AI Act Annex III audit trail, and the PSD2 authentication record. One query. Multiple regulatory obligations covered from the same underlying event.</p></div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- PILOT -->
+<div class="wrap" id="pilot">
+<section>
+  <div class="eyebrow">Pilot Programme</div>
+  <h2>Opening <span class="dim">July 2026</span></h2>
+  <div class="pilot-badge"><div class="pilot-dot"></div>Registration open &nbsp;&middot;&nbsp; Pilot opens July 2026</div>
+  <div class="cd-row">
+    <div class="cd-b"><span class="cd-n" id="cd-d">--</span><div class="cd-l">Days</div></div>
+    <div class="cd-s">:</div>
+    <div class="cd-b"><span class="cd-n" id="cd-h">--</span><div class="cd-l">Hours</div></div>
+    <div class="cd-s">:</div>
+    <div class="cd-b"><span class="cd-n" id="cd-m">--</span><div class="cd-l">Minutes</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <p class="lead" style="margin-bottom:16px">The UMI transaction analysis pilot opens to a select group of financial institutions, payment processors, and compliance technology teams in July 2026.</p>
+      <div class="box"><div class="box-lbl">Who should apply</div><p>Regulated financial institutions in EU, UK, or Australia with live DORA, FCA, or APRA obligations. Payment processors handling PSD2 or MiCA flows. Compliance technology teams building structured audit infrastructure.</p></div>
+      <div class="box dim"><div class="box-lbl">Or email directly</div><p><span style="color:var(--am);font-family:var(--mn)">hello&#64;velana-standard.org</span> &mdash; organisation name, jurisdiction, primary use case.</p></div>
+    </div>
+    <div class="int-box">
+      <h3>Register interest</h3>
+      <p>We will contact you before the pilot opens. No commitment required.</p>
+      <div class="if">
+        <input type="text"  placeholder="Organisation name"                     id="org-name">
+        <input type="email" placeholder="Email address"                          id="org-email">
+        <input type="text"  placeholder="Jurisdiction (EU / UK / AU / US / CA)" id="org-jur">
+        <input type="text"  placeholder="Primary use case"                       id="org-use">
+      </div>
+      <button class="btn btn-am" id="submit-btn" style="width:100%;justify-content:center;margin-top:6px">Submit registration</button>
+      <div id="form-msg" style="font-family:var(--mn);font-size:11px;margin-top:10px;display:none"></div>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ROADMAP -->
+<div class="wrap">
+<section>
+  <div class="eyebrow">Roadmap</div>
+  <h2>Transaction analysis <span class="dim">timeline</span></h2>
+  <div class="rm">
+    <div class="rm-item done">
+      <div class="rm-date">Q4 2025 &mdash; Complete</div>
+      <div class="rm-ttl">Schema confirmed substrate-agnostic</div>
+      <div class="rm-desc">UMI schema v1.1.2 confirmed to support transaction inputs without modification. Same five fields. Same 128-bit envelope. Same SQL query.</div>
+    </div>
+    <div class="rm-item done">
+      <div class="rm-date">Q1 2026 &mdash; Complete</div>
+      <div class="rm-ttl">AI and SIEM pilots validate the architecture</div>
+      <div class="rm-desc">Same schema. Same SQL. Same auditor workflow confirmed across AI outputs and network logs. Transaction substrate follows the identical pattern.</div>
+    </div>
+    <div class="rm-item now">
+      <div class="rm-date">Q2 2026 &mdash; Now open</div>
+      <div class="rm-ttl">Interest registration open</div>
+      <div class="rm-desc">Accepting expressions of interest from regulated financial institutions and payment processors. No commitment required to register.</div>
+    </div>
+    <div class="rm-item">
+      <div class="rm-date">July 2026</div>
+      <div class="rm-ttl">Pilot programme opens</div>
+      <div class="rm-desc">Live integration into payment pipelines with direct engineering support from the Aliventi team. Closed pilot &mdash; registered organisations only.</div>
+    </div>
+    <div class="rm-item">
+      <div class="rm-date">Q4 2026</div>
+      <div class="rm-ttl">General availability via API</div>
+      <div class="rm-desc">Transaction analysis API available following pilot completion and validation. Timeline subject to change based on pilot findings.</div>
+    </div>
+  </div>
+  <div class="box dim"><div class="box-lbl">On timelines</div>
+  <p>All dates are targets, not commitments. The pilot opening depends on successful completion of the schema validation and reference implementation work currently underway. Registered organisations will be notified of any changes before they occur.</p></div>
+</section>
+</div>
+
+</div><!-- end .pt -->
+
+<footer class="site-footer">
+  <div>
+    <div class="ft-brand">UMI-STANDARD.ORG</div>
+    <p class="ft-copy">Universal Morphological Interface &mdash; open standard, Apache 2.0.<br><br>
+    Stewardship provided by Aliventi sp. z o.o. via the UMI Initiative.<br><br>
+    Copyright &copy; 2026 The UMI Initiative<br>
+    Originally authored by Lukas Pruski</p>
+  </div>
+  <div><div class="ft-col-lbl">Standard</div><div class="ft-links">
+    <a href="https://github.com/umi-standard/umi-standard" target="_blank">GitHub Repository</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/umi.schema.json" target="_blank">Schema v1.1.2</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/GOVERNANCE.md" target="_blank">Governance</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank">Conformance</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Pages</div><div class="ft-links">
+    <a href="index.html">Overview</a>
+    <a href="explorer.html">UMI Explorer</a>
+    <a href="ai.html">AI Compliance</a>
+    <a href="siem.html">SIEM &amp; Logs</a>
+    <a href="transactions.html">Transactions</a>
+    <a href="velana.html">VELANA Project</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Contact</div><div class="ft-links">
+    <a href="https://velana-standard.org" target="_blank">velana-standard.org</a>
+    <span style="font-family:var(--mn);font-size:11px;color:var(--t2)">hello&#64;velana-standard.org</span>
+  </div></div>
+</footer>
+
+<script>
+// ── Theme ────────────────────────────────────────────────────────────────
+(function() {
+  var saved = localStorage.getItem('umi-theme');
+  var os = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', saved || os);
+})();
+
+function updateThemeBtn(theme) {
+  var icon  = document.getElementById('theme-icon');
+  var label = document.getElementById('theme-label');
+  if (!icon || !label) return;
+  icon.textContent  = theme === 'light' ? '\u263D' : '\u2600';
+  label.textContent = theme === 'light' ? 'Dark' : 'Light';
+}
+
+// ── Countdown ────────────────────────────────────────────────────────────
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function tick() {
+  var diff = new Date('2026-07-01T00:00:00Z') - new Date();
+  if (diff < 0) diff = 0;
+  var d = document.getElementById('cd-d');
+  var h = document.getElementById('cd-h');
+  var m = document.getElementById('cd-m');
+  if (d) d.textContent = Math.floor(diff / 86400000);
+  if (h) h.textContent = pad(Math.floor(diff % 86400000 / 3600000));
+  if (m) m.textContent = pad(Math.floor(diff % 3600000 / 60000));
+}
+
+// ── Form submission ──────────────────────────────────────────────────────
+function submitInterest() {
+  var org   = document.getElementById('org-name').value.trim();
+  var email = document.getElementById('org-email').value.trim();
+  var msg   = document.getElementById('form-msg');
+  if (!org || !email) {
+    msg.style.display = 'block';
+    msg.style.color   = 'var(--rd)';
+    msg.textContent   = 'Please enter organisation name and email address.';
+    return;
+  }
+  msg.style.display = 'block';
+  msg.style.color   = 'var(--am)';
+  msg.textContent   = 'Thank you. We will be in touch before the pilot opens in July 2026.';
+  var fields = ['org-name', 'org-email', 'org-jur', 'org-use'];
+  for (var i = 0; i < fields.length; i++) {
+    var el = document.getElementById(fields[i]);
+    if (el) el.value = '';
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  updateThemeBtn(currentTheme);
+
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('umi-theme', t);
+    updateThemeBtn(t);
+  });
+
+  document.getElementById('submit-btn').addEventListener('click', submitInterest);
+
+  tick();
+  setInterval(tick, 30000);
+});
+</script>
+
+</body>
+</html>

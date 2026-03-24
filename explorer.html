@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UMI Explorer — Universal Morphological Interface</title>
+<meta name="description" content="Interactive UMI encoding explorer. Paste any text and see the structural extraction live. Switch substrates to confirm the schema is unchanged.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── THEME VARIABLES ──────────────────────────────────────────────────── */
+:root {
+  --mn:"IBM Plex Mono",monospace;
+  --sn:"IBM Plex Sans",sans-serif;
+  --ac:#00d4a8;--rd:#ff3d5c;--bl:#5ba8f5;--am:#f5a623;--pu:#a07af0;
+}
+html[data-theme="dark"] {
+  --bg:#07090d;--bg2:#0b0f15;--bg3:#0f1520;
+  --b1:#1a2535;--b2:#243550;
+  --t1:#b8cfe0;--t2:#506070;--t3:#e0f0ff;
+  --nav-bg:rgba(7,9,13,.97);
+  --grid-col:#1a2535;
+  --inp-bg:#0b0f15;
+  --out-bg:#040608;
+  --cs-bg:rgba(91,168,245,.08);
+  --cs-col:var(--bl);
+  --panel-empty:rgba(255,255,255,.06);
+}
+html[data-theme="light"] {
+  --bg:#f4f7fa;--bg2:#eaf0f6;--bg3:#dde6ef;
+  --b1:#c8d8e8;--b2:#b0c4d4;
+  --t1:#1e2e3c;--t2:#3a5268;--t3:#0a1520;
+  --nav-bg:rgba(244,247,250,.97);
+  --grid-col:#c8d8e8;
+  --inp-bg:#eaf0f6;
+  --out-bg:#f0f4f8;
+  --cs-bg:rgba(91,168,245,.12);
+  --cs-col:#2a6090;
+  --panel-empty:rgba(0,0,0,.06);
+}
+/* ── RESET & BASE ─────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--sn);font-size:16px;line-height:1.7;overflow-x:hidden;transition:background .25s,color .25s}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(var(--grid-col) 1px,transparent 1px),linear-gradient(90deg,var(--grid-col) 1px,transparent 1px);background-size:56px 56px;opacity:.08;pointer-events:none;z-index:-1;transition:opacity .25s}
+html[data-theme="light"] body::before{opacity:.18}
+/* ── NAV ──────────────────────────────────────────────────────────────── */
+.nav-wrap{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1);transition:background .25s,border-color .25s}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:56px;max-width:1280px;margin:0 auto}
+.logo{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;text-decoration:none;display:flex;align-items:center;gap:7px}
+.logo-dim{color:var(--t2)}
+.nav-r{display:flex;align-items:center;gap:6px}
+.nav-l{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.07em;padding:5px 10px;border-radius:2px;transition:color .2s}
+.nav-l:hover{color:var(--ac)}
+.theme-btn{display:flex;align-items:center;gap:5px;font-family:var(--mn);font-size:11px;color:var(--t2);background:transparent;border:1px solid var(--b1);border-radius:2px;padding:4px 10px;cursor:pointer;transition:border-color .2s,color .2s;letter-spacing:.06em}
+.theme-btn:hover{border-color:var(--ac);color:var(--ac)}
+.theme-icon{font-size:12px}
+.subnav{border-top:1px solid var(--b1)}
+.subnav-inner{display:flex;align-items:center;padding:0 52px;height:36px;max-width:1280px;margin:0 auto;gap:2px;overflow-x:auto}
+.sn-link{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.06em;padding:4px 11px;border-radius:2px;transition:color .2s,background .2s;white-space:nowrap}
+.sn-link:hover{color:var(--t3);background:var(--panel-empty)}
+.sn-link.active{color:var(--ac);background:rgba(0,212,168,.07)}
+.sn-sep{width:1px;height:14px;background:var(--b1);margin:0 6px;flex-shrink:0}
+.sn-ext{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;padding:4px 11px;display:flex;align-items:center;gap:4px;transition:color .2s;white-space:nowrap}
+.sn-ext:hover{color:var(--t3)}
+.pt{padding-top:94px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 52px}
+/* ── HERO ─────────────────────────────────────────────────────────────── */
+.exp-hero{padding:36px 0 24px;text-align:center}
+.eyebrow{font-family:var(--mn);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ac);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.eyebrow::before,.eyebrow::after{content:"";width:16px;height:1px;background:currentColor;opacity:.5}
+h1{font-family:var(--mn);font-size:clamp(20px,2.5vw,32px);font-weight:300;color:var(--t3);line-height:1.2;letter-spacing:-.01em;margin-bottom:10px}
+h1 .dim{color:var(--t2)}
+.exp-hero p{font-size:14px;color:var(--t2);max-width:540px;margin:0 auto 20px;line-height:1.7}
+/* ── SUBSTRATE BAR ────────────────────────────────────────────────────── */
+.substrate-bar{display:inline-flex;background:var(--bg3);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:24px;transition:background .25s,border-color .25s}
+.sub-btn{font-family:var(--mn);font-size:11px;letter-spacing:.07em;color:var(--t2);padding:9px 22px;cursor:pointer;border:none;background:transparent;border-right:1px solid var(--b1);transition:color .2s,background .2s;white-space:nowrap}
+.sub-btn:last-child{border-right:none}
+.sub-btn:hover{color:var(--t3);background:var(--panel-empty)}
+.sub-btn.active{color:var(--ac);background:rgba(0,212,168,.07)}
+/* ── DISCLAIMER ───────────────────────────────────────────────────────── */
+.exp-disclaimer{background:var(--bg3);border:1px solid var(--b2);border-radius:4px;padding:12px 18px;display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;transition:background .25s}
+.disc-ico{font-size:14px;color:var(--am);flex-shrink:0;margin-top:2px}
+.disc-text{font-size:12px;color:var(--t2);line-height:1.6}
+.disc-text strong{color:var(--am);font-family:var(--mn);font-size:10px;letter-spacing:.06em}
+.disc-text a{color:var(--ac);font-family:var(--mn);font-size:11px;text-decoration:none}
+/* ── MAIN PANELS ──────────────────────────────────────────────────────── */
+.exp-panels{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:6px;overflow:hidden;margin-bottom:16px;transition:background .25s,border-color .25s}
+.exp-panel{background:var(--bg3);padding:0;transition:background .25s}
+.panel-hdr{font-family:var(--mn);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);padding:10px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;transition:border-color .25s}
+.panel-badge{font-size:9px;padding:2px 7px;border-radius:2px;background:rgba(0,212,168,.08);color:var(--ac);letter-spacing:.04em}
+.panel-body{padding:18px}
+/* ── EXAMPLE PILLS ────────────────────────────────────────────────────── */
+.pills-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pills-lbl{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2)}
+.pills-hint{font-family:var(--mn);font-size:10px;color:var(--ac);opacity:.7}
+.example-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding:10px;background:var(--bg2);border:1px solid var(--b1);border-radius:4px;transition:background .25s}
+.ex-pill{font-family:var(--mn);font-size:11px;padding:5px 11px;border-radius:2px;cursor:pointer;border:1px solid var(--b2);color:var(--t2);background:var(--bg3);transition:border-color .2s,color .2s,background .2s}
+.ex-pill:hover{border-color:var(--ac);color:var(--ac);background:rgba(0,212,168,.05)}
+.ex-pill.active{border-color:var(--ac);color:var(--ac);background:rgba(0,212,168,.08)}
+/* ── INPUT FIELDS ─────────────────────────────────────────────────────── */
+.inp-group{margin-bottom:12px}
+.inp-lbl{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.inp-live{font-family:var(--mn);font-size:9px;color:var(--ac);letter-spacing:.08em;opacity:.6}
+.inp-field{width:100%;background:var(--inp-bg);border:1px solid var(--b2);border-radius:3px;color:var(--t1);font-family:var(--mn);font-size:12px;padding:10px 13px;outline:none;resize:vertical;line-height:1.65;transition:border-color .2s,background .25s;min-height:56px}
+.inp-field:focus{border-color:var(--ac)}
+.inp-field::placeholder{color:var(--t2);opacity:.6}
+.inp-divider{height:1px;background:var(--b1);margin:4px 0 12px;display:flex;align-items:center;gap:10px}
+.inp-divider span{font-family:var(--mn);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);opacity:.5;background:var(--bg3);padding:0 8px;white-space:nowrap}
+.type-hint{font-family:var(--mn);font-size:10px;color:var(--t2);opacity:.55;text-align:center;margin-top:8px;letter-spacing:.04em}
+/* ── OUTPUT ───────────────────────────────────────────────────────────── */
+.out-field{margin-bottom:13px}
+.out-key{font-family:var(--mn);font-size:10px;color:var(--t2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.out-key .out-sub{font-size:9px;color:var(--t2);opacity:.6;font-style:normal;letter-spacing:.04em}
+.out-val{font-family:var(--mn);font-size:13px;color:var(--t3);font-weight:500}
+.score-bar-wrap{height:7px;background:var(--b1);border-radius:4px;overflow:hidden;margin-top:5px;transition:background .25s}
+.score-bar{height:100%;border-radius:4px;transition:width .5s ease,background .5s ease}
+.a4-block{background:var(--panel-empty);padding:10px;border-radius:3px;margin:0 -4px 13px}
+.out-hex{font-family:var(--mn);font-size:11px;color:var(--t2);background:var(--out-bg);border:1px solid var(--b1);border-radius:3px;padding:9px 13px;word-break:break-all;margin-bottom:12px;line-height:1.6;transition:background .25s}
+.out-hex strong{color:var(--t3)}
+.verdict-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.vb{font-family:var(--mn);font-size:10px;padding:3px 9px;border-radius:2px;font-weight:500;white-space:nowrap}
+.vb-block{background:rgba(255,61,92,.15);color:#ff3d5c;border:1px solid rgba(255,61,92,.3)}
+.vb-flag{background:rgba(245,166,35,.15);color:#f5a623;border:1px solid rgba(245,166,35,.3)}
+.vb-pass{background:rgba(0,212,168,.12);color:#00d4a8;border:1px solid rgba(0,212,168,.25)}
+.flags-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.flag-chip{font-family:var(--mn);font-size:9px;padding:3px 7px;border-radius:2px;background:var(--cs-bg);color:var(--cs-col);letter-spacing:.03em}
+.out-checksum{font-family:var(--mn);font-size:10px;color:var(--t2);padding:8px 12px;background:var(--out-bg);border-radius:3px;border:1px solid var(--b1);word-break:break-all;line-height:1.5;transition:background .25s}
+.out-sep{height:1px;background:var(--b1);margin:12px 0;transition:background .25s}
+/* ── COMPARE STRIP ────────────────────────────────────────────────────── */
+.compare-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:4px;overflow:hidden;margin-bottom:24px;transition:background .25s,border-color .25s}
+.cs-col{background:var(--bg3);padding:18px;transition:background .25s}
+.cs-lbl{font-family:var(--mn);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:10px}
+.cs-item{font-size:12px;color:var(--t2);margin-bottom:6px;line-height:1.5;display:flex;align-items:flex-start;gap:7px}
+/* ── FOOTER ───────────────────────────────────────────────────────────── */
+.site-footer{border-top:1px solid var(--b1);padding:48px 52px;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;transition:border-color .25s}
+.ft-brand{font-family:var(--mn);font-size:13px;font-weight:500;color:var(--ac);letter-spacing:.1em;margin-bottom:8px}
+.ft-copy{font-size:12px;color:var(--t2);line-height:1.75;max-width:300px}
+.ft-col-lbl{font-family:var(--mn);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);opacity:.45;margin-bottom:10px}
+.ft-links{display:flex;flex-direction:column;gap:7px}
+.ft-links a{font-family:var(--mn);font-size:11px;color:var(--t2);text-decoration:none;transition:color .2s}
+.ft-links a:hover{color:var(--ac)}
+/* ── RESPONSIVE ───────────────────────────────────────────────────────── */
+@media(max-width:800px){.exp-panels{grid-template-columns:1fr}.compare-strip{grid-template-columns:1fr}}
+@media(max-width:768px){nav,.subnav-inner{padding-left:20px;padding-right:20px}.wrap{padding:0 20px}.hide-mob{display:none}}
+@media(max-width:900px){.site-footer{grid-template-columns:1fr 1fr;padding:32px 20px}}
+@media(max-width:560px){.site-footer{grid-template-columns:1fr;padding:24px 20px}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav-wrap">
+  <nav>
+    <a href="index.html" class="logo"><span style="font-size:9px;opacity:.4">&#9658;</span>UMI<span class="logo-dim">-standard</span></a>
+    <div class="nav-r">
+      <a href="https://github.com/umi-standard/umi-standard" class="nav-l hide-mob" target="_blank">GitHub</a>
+      <button class="theme-btn" id="theme-toggle" title="Toggle light/dark mode">
+        <span class="theme-icon" id="theme-icon">&#9788;</span>
+        <span id="theme-label">Light</span>
+      </button>
+    </div>
+  </nav>
+  <div class="subnav"><div class="subnav-inner">
+    <a href="index.html" class="sn-link">Overview</a>
+    <a href="explorer.html" class="sn-link active">Explorer</a>
+    <a href="ai.html" class="sn-link">AI Compliance</a>
+    <a href="siem.html" class="sn-link">SIEM &amp; Logs</a>
+    <a href="transactions.html" class="sn-link">Transactions</a>
+    <a href="velana.html" class="sn-link">VELANA Project</a>
+    <div class="sn-sep"></div>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/README.md" class="sn-ext" target="_blank">&#8599;&nbsp;Docs</a>
+    <a href="https://github.com/umi-standard/umi-standard" class="sn-ext" target="_blank">&#8997;&nbsp;Repo</a>
+  </div></div>
+</div>
+
+<div class="pt">
+<div class="wrap">
+
+<!-- HERO -->
+<div class="exp-hero">
+  <div class="eyebrow">UMI Explorer</div>
+  <h1>See the encoding.<br><span class="dim">Understand the standard.</span></h1>
+  <p>Select an example or type your own text. The UMI extraction updates live as you type. Switch substrates to confirm the schema is identical across AI, network, and software inputs.</p>
+  <div class="substrate-bar">
+    <button class="sub-btn active" id="sub-ai">AI Output</button>
+    <button class="sub-btn" id="sub-net">Network Log</button>
+    <button class="sub-btn" id="sub-sw">Software Event</button>
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="exp-disclaimer">
+  <div class="disc-ico">&#9432;</div>
+  <div class="disc-text">
+    <strong>HEURISTIC DEMO &middot; NOT A CONFORMANT ENCODER</strong>
+    &mdash; Extraction values are produced by a simplified keyword-based engine, not by the MILANA reference encoder.
+    The <code style="font-family:var(--mn)">umi_128_hex</code> is a structurally valid placeholder.
+    The <code style="font-family:var(--mn)">umi_checksum</code> simulates the canonical SHA-256 algorithm from
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank">CONFORMANCE.md</a>.
+  </div>
+</div>
+
+<!-- PANELS -->
+<div class="exp-panels">
+
+  <!-- LEFT: INPUT -->
+  <div class="exp-panel">
+    <div class="panel-hdr">
+      <span>Input</span>
+      <span class="panel-badge" id="sub-badge">AI Output</span>
+    </div>
+    <div class="panel-body">
+
+      <!-- EXAMPLE PILLS -->
+      <div class="pills-hdr">
+        <span class="pills-lbl">Examples</span>
+        <span class="pills-hint">&#8592; click to load</span>
+      </div>
+      <div class="example-pills" id="example-pills"></div>
+
+      <div class="inp-divider"><span>or type your own</span></div>
+
+      <!-- PROMPT (AI only) -->
+      <div id="prompt-group" class="inp-group">
+        <div class="inp-lbl">
+          Prompt
+          <span class="inp-live">&#9679; live</span>
+        </div>
+        <textarea class="inp-field" id="inp-prompt" rows="2" placeholder="Enter the prompt or question..."></textarea>
+      </div>
+
+      <!-- OUTPUT / LOG LINE -->
+      <div class="inp-group">
+        <div class="inp-lbl">
+          <span id="output-lbl">AI Output / Response</span>
+          <span class="inp-live">&#9679; live</span>
+        </div>
+        <textarea class="inp-field" id="inp-output" rows="4" placeholder="Enter the output or log line..."></textarea>
+      </div>
+
+      <div class="type-hint">Results update automatically as you type</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: OUTPUT -->
+  <div class="exp-panel">
+    <div class="panel-hdr">
+      <span>UMI Extraction</span>
+      <span style="font-family:var(--mn);font-size:10px;color:var(--t2)">v1.1.2</span>
+    </div>
+    <div class="panel-body" id="output-panel">
+      <div style="color:var(--t2);font-family:var(--mn);font-size:12px;padding:20px 0;text-align:center;opacity:.4">Loading...</div>
+    </div>
+  </div>
+
+</div><!-- end panels -->
+
+<!-- REFERENCE STRIP -->
+<div class="compare-strip">
+  <div class="cs-col">
+    <div class="cs-lbl">What the five fields encode</div>
+    <div class="cs-item"><span style="color:var(--ac);font-family:var(--mn);min-width:90px">A1_TARGET</span> operational domain of the event</div>
+    <div class="cs-item"><span style="color:var(--am);font-family:var(--mn);min-width:90px">A2_CLAIM</span> structural form: absolute / conditional</div>
+    <div class="cs-item"><span style="color:var(--t3);font-family:var(--mn);min-width:90px">A3_SCORE</span> expression intensity 0.0&ndash;1.0</div>
+    <div class="cs-item"><span style="color:var(--ac);font-family:var(--mn);min-width:90px">A4_CLARITY</span> reasoning consistency &mdash; primary routing metric</div>
+    <div class="cs-item"><span style="color:var(--t2);font-family:var(--mn);min-width:90px">A5_TIME</span> temporal scope of the claim</div>
+  </div>
+  <div class="cs-col">
+    <div class="cs-lbl">A4_CLARITY routing thresholds</div>
+    <div class="cs-item"><span style="color:var(--rd);font-family:var(--mn);min-width:90px">0.00&ndash;0.49</span> CRITICAL &rarr; BLOCK</div>
+    <div class="cs-item"><span style="color:var(--am);font-family:var(--mn);min-width:90px">0.50&ndash;0.64</span> HIGH &rarr; BLOCK_AND_FLAG</div>
+    <div class="cs-item"><span style="color:var(--am);font-family:var(--mn);min-width:90px">0.65&ndash;0.74</span> WARNING &rarr; FLAG_FOR_REVIEW</div>
+    <div class="cs-item"><span style="color:var(--ac);font-family:var(--mn);min-width:90px">0.75&ndash;1.00</span> LOW &rarr; PASS</div>
+    <div class="cs-item" style="margin-top:8px"><a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank" style="color:var(--ac);font-family:var(--mn);font-size:11px">CONFORMANCE.md &rarr;</a></div>
+  </div>
+  <div class="cs-col">
+    <div class="cs-lbl">The substrate insight</div>
+    <div class="cs-item">Switch between AI / Network / Software at the top.</div>
+    <div class="cs-item">The envelope structure is identical across all three.</div>
+    <div class="cs-item">Only the values change &mdash; not the fields.</div>
+    <div class="cs-item">One schema. One SQL query. Any substrate.</div>
+    <div class="cs-item" style="margin-top:8px"><a href="https://github.com/umi-standard/umi-standard/blob/main/umi.schema.json" target="_blank" style="color:var(--ac);font-family:var(--mn);font-size:11px">umi.schema.json v1.1.2 &rarr;</a></div>
+  </div>
+</div>
+
+</div><!-- end wrap -->
+</div><!-- end .pt -->
+
+<footer class="site-footer">
+  <div>
+    <div class="ft-brand">UMI-STANDARD.ORG</div>
+    <p class="ft-copy">Universal Morphological Interface &mdash; open standard, Apache 2.0.<br><br>
+    Stewardship provided by Aliventi sp. z o.o. via the UMI Initiative.<br><br>
+    Copyright &copy; 2026 The UMI Initiative<br>
+    Originally authored by Lukas Pruski</p>
+  </div>
+  <div><div class="ft-col-lbl">Standard</div><div class="ft-links">
+    <a href="https://github.com/umi-standard/umi-standard" target="_blank">GitHub Repository</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/umi.schema.json" target="_blank">Schema v1.1.2</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/GOVERNANCE.md" target="_blank">Governance</a>
+    <a href="https://github.com/umi-standard/umi-standard/blob/main/CONFORMANCE.md" target="_blank">Conformance</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Pages</div><div class="ft-links">
+    <a href="index.html">Overview</a>
+    <a href="explorer.html">UMI Explorer</a>
+    <a href="ai.html">AI Compliance</a>
+    <a href="siem.html">SIEM &amp; Logs</a>
+    <a href="transactions.html">Transactions</a>
+    <a href="velana.html">VELANA Project</a>
+  </div></div>
+  <div><div class="ft-col-lbl">Contact</div><div class="ft-links">
+    <a href="https://velana-standard.org" target="_blank">velana-standard.org</a>
+    <span style="font-family:var(--mn);font-size:11px;color:var(--t2)">hello&#64;velana-standard.org</span>
+  </div></div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// THEME — reads OS preference, respects localStorage override
+// ═══════════════════════════════════════════════════════════════════════
+(function() {
+  var saved = localStorage.getItem('umi-theme');
+  var osPrefers = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  var theme = saved || osPrefers;
+  document.documentElement.setAttribute('data-theme', theme);
+})();
+
+function updateThemeButton(theme) {
+  var icon  = document.getElementById('theme-icon');
+  var label = document.getElementById('theme-label');
+  if (!icon || !label) return;
+  if (theme === 'light') {
+    icon.textContent  = '\u263D'; // crescent moon
+    label.textContent = 'Dark';
+  } else {
+    icon.textContent  = '\u2600'; // sun
+    label.textContent = 'Light';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var current = document.documentElement.getAttribute('data-theme') || 'dark';
+  updateThemeButton(current);
+
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('umi-theme', t);
+    updateThemeButton(t);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// HEURISTIC EXTRACTION ENGINE — keyword-based demo, not conformant
+// ═══════════════════════════════════════════════════════════════════════
+function extractTarget(p, o) {
+  var t = (p + ' ' + o).toLowerCase();
+  var map = [
+    ['patient',     'Medical_Diagnostic_Assessment'],
+    ['symptom',     'Medical_Diagnostic_Assessment'],
+    ['diagnosis',   'Medical_Diagnostic_Assessment'],
+    ['credit',      'Credit_Risk_Assessment'],
+    ['loan',        'Loan_Decision'],
+    ['nda',         'Legal_Contract_Review'],
+    ['contract',    'Legal_Contract_Review'],
+    ['stablecoin',  'Stablecoin_Disclosure'],
+    ['whitepaper',  'Regulatory_Disclosure'],
+    ['bitcoin',     'Crypto_Investment_Advisory'],
+    ['crypto',      'Crypto_Investment_Advisory'],
+    ['invest',      'Investment_Advisory'],
+    ['dora',        'ICT_Compliance_Assessment'],
+    ['openai',      'Third_Party_AI_Risk'],
+    ['sshd',        'Network_Access_Control'],
+    ['auth_fail',   'Network_Access_Control'],
+    ['port scan',   'Network_Perimeter_Security'],
+    ['firewall',    'Network_Security'],
+    ['db-pool',     'Database_Availability'],
+    ['connection',  'Database_Availability'],
+    ['kernel',      'System_Resource_Management'],
+    ['ransomware',  'Cyber_Security_Incident'],
+    ['breach',      'Data_Breach_Response'],
+    ['cve',         'Vulnerability_Assessment'],
+    ['outage',      'ICT_Incident_Classification'],
+    ['incident',    'ICT_Incident_Classification'],
+    ['fraud',       'Fraud_Detection']
+  ];
+  for (var i = 0; i < map.length; i++) {
+    if (t.indexOf(map[i][0]) !== -1) return map[i][1];
+  }
+  return 'General_Assessment';
+}
+
+function scorePolarity(o) {
+  var t = o.toLowerCase();
+  var absPos = ['no risk','fully protected','complete protection','guaranteed','never will','zero risk','all market','no risk of loss','fully backed','100% safe'];
+  var absNeg = ['does not require','no reporting','not necessary','not required','not an incident','does not apply','does not create'];
+  for (var i = 0; i < absPos.length; i++) { if (t.indexOf(absPos[i]) !== -1) return 'ABSOLUTE_POSITIVE'; }
+  for (var j = 0; j < absNeg.length; j++) { if (t.indexOf(absNeg[j]) !== -1) return 'ABSOLUTE_NEGATIVE'; }
+  var cond = ['may','might','could','recommend','subject to','if ','depending'];
+  for (var k = 0; k < cond.length; k++) { if (t.indexOf(cond[k]) !== -1) return 'CONDITIONAL'; }
+  return 'DECLARATIVE';
+}
+
+function scoreIntensity(o) {
+  var t = o.toLowerCase();
+  var s = 0.50;
+  var up   = ['fully','completely','always','never','guaranteed','no risk','zero risk','100%','all market','will explode','100x','absolutely','never will'];
+  var down = ['may','might','could','typically','generally','recommend','subject to','consider','sometimes','usually','often'];
+  for (var i = 0; i < up.length;   i++) { if (t.indexOf(up[i])   !== -1) s += 0.07; }
+  for (var j = 0; j < down.length; j++) { if (t.indexOf(down[j]) !== -1) s -= 0.05; }
+  return Math.round(Math.min(1, Math.max(0, s)) * 100) / 100;
+}
+
+function scoreCoherence(p, o) {
+  var t  = o.toLowerCase();
+  var pt = p.toLowerCase();
+  var s  = 0.80;
+
+  var absolutes = ['no risk of loss','fully protected','complete protection','not necessary','zero risk','all market','no further','100x','will explode','guaranteed','never been hacked','never will','does not create','does not require'];
+  for (var i = 0; i < absolutes.length; i++) { if (t.indexOf(absolutes[i]) !== -1) s -= 0.18; }
+
+  var riskCtx = ['breach','attack','vulnerability','malicious','ransomware','incident','cve','hack','firewall','ddos'];
+  var falseNeg = ['minor','not serious','not an incident','no further','not required','simply','expected behaviour'];
+  var inRisk = false;
+  for (var j = 0; j < riskCtx.length; j++) { if (pt.indexOf(riskCtx[j]) !== -1) { inRisk = true; break; } }
+  if (inRisk) {
+    for (var k = 0; k < falseNeg.length; k++) { if (t.indexOf(falseNeg[k]) !== -1) s -= 0.22; }
+  }
+
+  var finAdv = ['good time to invest','favourable entry','prices will','analysts predict','100x','will explode','accumulating','buy now'];
+  var finCtx = ['invest','bitcoin','crypto','token','stablecoin','defi'];
+  var inFin = false;
+  for (var fi = 0; fi < finCtx.length; fi++) { if (pt.indexOf(finCtx[fi]) !== -1) { inFin = true; break; } }
+  if (inFin) {
+    for (var fa = 0; fa < finAdv.length; fa++) { if (t.indexOf(finAdv[fa]) !== -1) s -= 0.35; }
+  }
+
+  var hedges  = ['may','might','could','typically','subject to','recommend','assess','consider','depending','review'];
+  var regs    = ['article','regulation','dora','nis2','mica','eu ai act','gdpr','requirement'];
+  var hCount  = 0;
+  var rCount  = 0;
+  for (var h = 0; h < hedges.length; h++) { if (t.indexOf(hedges[h]) !== -1) hCount++; }
+  for (var r = 0; r < regs.length;   r++) { if (t.indexOf(regs[r])   !== -1) rCount++; }
+  s += Math.min(0.10, hCount * 0.02);
+  s += Math.min(0.08, rCount * 0.02);
+
+  return Math.round(Math.min(1, Math.max(0.05, s)) * 100) / 100;
+}
+
+function determineTemporal(o) {
+  var t = o.toLowerCase();
+  if (['always','never','all market','100x','will never'].some(function(w){ return t.indexOf(w) !== -1; })) return 'ABSOLUTE_UNIVERSAL';
+  if (['currently','today','now','at this stage','this morning'].some(function(w){ return t.indexOf(w) !== -1; })) return 'PRESENT_SPECIFIC';
+  if (['will ','going to','predict','future','prices will'].some(function(w){ return t.indexOf(w) !== -1; })) return 'FUTURE_CLAIM';
+  if (['should','recommend','must','required'].some(function(w){ return t.indexOf(w) !== -1; })) return 'NORMATIVE_PRESENT';
+  return 'PRESENT_GENERAL';
+}
+
+function routing(a4) {
+  if (a4 < 0.50) return {risk:'CRITICAL',    action:'BLOCK',          cls:'vb-block'};
+  if (a4 < 0.65) return {risk:'HIGH',        action:'BLOCK_AND_FLAG', cls:'vb-flag'};
+  if (a4 < 0.75) return {risk:'WARNING',     action:'FLAG_FOR_REVIEW',cls:'vb-flag'};
+  return              {risk:'LOW',        action:'PASS',           cls:'vb-pass'};
+}
+
+function detectFlags(a1, a2, a4, sub) {
+  var flags = [];
+  if (a4 >= 0.75) return flags;
+  var aiDom  = ['Medical','Credit','Legal','HR','Investment','Advisory'];
+  var sicDom = ['ICT','Cyber','Security','Vulnerability','Network','Database','System'];
+  var finDom = ['Stablecoin','Crypto','Token','Investment','Disclosure'];
+  for (var i = 0; i < aiDom.length;  i++) { if (a1.indexOf(aiDom[i])  !== -1) { flags.push('EU_AI_ACT_ART15_ROBUSTNESS_FAILURE'); if (a2 === 'ABSOLUTE_POSITIVE') flags.push('EU_AI_ACT_ART13_TRANSPARENCY_FAILURE'); break; } }
+  for (var j = 0; j < sicDom.length; j++) { if (a1.indexOf(sicDom[j]) !== -1 || sub === 'net' || sub === 'sw') { flags.push('EU_NIS2_ART21_INADEQUATE_RISK_ASSESSMENT'); if (a1.indexOf('Database') !== -1 || a1.indexOf('ICT') !== -1) flags.push('EU_DORA_ART17_MAJOR_INCIDENT'); else flags.push('EU_NIS2_ART23_REPORTABLE_INCIDENT_CANDIDATE'); break; } }
+  for (var k = 0; k < finDom.length; k++) { if (a1.indexOf(finDom[k]) !== -1) { flags.push('EU_MICA_ART19_MISLEADING_CONTENT'); flags.push('EU_MICA_MARKET_INTEGRITY_RISK'); break; } }
+  return flags.slice(0, 3);
+}
+
+function simHex(a1, a2, a4, sub) {
+  function hash4(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+    return (h >>> 0).toString(16).toUpperCase().padStart(8, '0').slice(0, 4);
+  }
+  var subMap = {ai:'1', net:'2', sw:'3'};
+  var polMap = {ABSOLUTE_POSITIVE:'A', ABSOLUTE_NEGATIVE:'B', CONDITIONAL:'C', DECLARATIVE:'D'};
+  var sc  = Math.round(a4 * 65535).toString(16).toUpperCase().padStart(4, '0');
+  var bk  = routing(a4).action.indexOf('BLOCK') !== -1 ? 'F' : '0';
+  var tail= hash4(a1 + a4) + hash4(a1 + sub) + hash4(a4 + a2) + hash4(sub + a1);
+  return '0001' + hash4(a1).slice(0,3) + (polMap[a2] || '0') + 'F4A2' + sc + (subMap[sub] || '0') + bk + '0' + tail;
+}
+
+function simChecksum(p, o) {
+  var s  = '{"output":' + JSON.stringify(o) + ',"pii_redacted":false,"prompt":' + JSON.stringify(p) + '}';
+  var h1 = 0, h2 = 0, h3 = 0, h4 = 0;
+  for (var i = 0; i < s.length; i++) {
+    var c = s.charCodeAt(i);
+    h1 = ((h1 * 31) + c)  >>> 0;
+    h2 = ((h2 * 17) + c)  >>> 0;
+    h3 = ((h3 * 37) + c)  >>> 0;
+    h4 = ((h4 * 13) + c)  >>> 0;
+  }
+  var p1 = h1.toString(16).padStart(8,'0');
+  var p2 = h2.toString(16).padStart(8,'0');
+  var p3 = h3.toString(16).padStart(8,'0');
+  var p4 = h4.toString(16).padStart(8,'0');
+  return (p1 + p2 + p3 + p4 + p1 + p2 + p3 + p4).slice(0, 64);
+}
+
+function barCol(v) {
+  if (v < 0.50) return 'var(--rd)';
+  if (v < 0.75) return 'var(--am)';
+  return 'var(--ac)';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ENCODE — reads textareas, updates output panel
+// ═══════════════════════════════════════════════════════════════════════
+function encode() {
+  var p   = document.getElementById('inp-prompt').value;
+  var o   = document.getElementById('inp-output').value.trim();
+  if (!o) {
+    document.getElementById('output-panel').innerHTML =
+      '<div style="color:var(--t2);font-family:var(--mn);font-size:12px;padding:20px 0;text-align:center;opacity:.4">Type something above &mdash; or click an example</div>';
+    return;
+  }
+
+  var a1  = extractTarget(p, o);
+  var a2  = scorePolarity(o);
+  var a3  = scoreIntensity(o);
+  var a4  = scoreCoherence(p, o);
+  var a5  = determineTemporal(o);
+  var r   = routing(a4);
+  var flags = detectFlags(a1, a2, a4, currentSub);
+  var hex   = simHex(a1, a2, a4, currentSub);
+  var cs    = simChecksum(p, o);
+  var a4c   = barCol(a4);
+  var a3c   = barCol(a3);
+
+  var flagsHtml = '';
+  if (flags.length > 0) {
+    flagsHtml = '<div class="flags-wrap">';
+    for (var i = 0; i < flags.length; i++) {
+      flagsHtml += '<span class="flag-chip">' + flags[i] + '</span>';
+    }
+    flagsHtml += '</div>';
+  } else {
+    flagsHtml = '<div style="font-family:var(--mn);font-size:11px;color:var(--t2);margin-bottom:10px">No flags &mdash; clean record</div>';
+  }
+
+  document.getElementById('output-panel').innerHTML =
+    '<div class="out-field">' +
+      '<div class="out-key">A1_TARGET <span class="out-sub">operational domain</span></div>' +
+      '<div class="out-val" style="color:var(--bl)">' + a1 + '</div>' +
+    '</div>' +
+    '<div class="out-field">' +
+      '<div class="out-key">A2_CLAIM <span class="out-sub">claim structure</span></div>' +
+      '<div class="out-val" style="color:var(--am)">' + a2 + '</div>' +
+    '</div>' +
+    '<div class="out-field">' +
+      '<div class="out-key">A3_SCORE <span class="out-sub">expression intensity</span></div>' +
+      '<div class="out-val" style="color:' + a3c + '">' + a3 + '</div>' +
+      '<div class="score-bar-wrap"><div class="score-bar" style="width:' + (a3*100) + '%;background:' + a3c + '"></div></div>' +
+    '</div>' +
+    '<div class="a4-block">' +
+      '<div class="out-key" style="color:' + a4c + '">A4_CLARITY <span class="out-sub" style="color:var(--t2)">reasoning consistency &mdash; routing metric</span></div>' +
+      '<div class="out-val" style="color:' + a4c + ';font-size:20px">' + a4 + '</div>' +
+      '<div class="score-bar-wrap" style="height:10px;margin-top:7px"><div class="score-bar" style="width:' + (a4*100) + '%;background:' + a4c + '"></div></div>' +
+    '</div>' +
+    '<div class="out-field">' +
+      '<div class="out-key">A5_TIMEFRAME <span class="out-sub">temporal scope</span></div>' +
+      '<div class="out-val" style="color:var(--t2)">' + a5 + '</div>' +
+    '</div>' +
+    '<div class="out-sep"></div>' +
+    '<div class="out-hex"><strong>umi_128_hex</strong><br>' + hex + '</div>' +
+    '<div class="verdict-row">' +
+      '<span class="vb ' + r.cls + '">' + r.action + '</span>' +
+      '<span style="font-family:var(--mn);font-size:10px;color:var(--t2)">' + r.risk + '</span>' +
+    '</div>' +
+    flagsHtml +
+    '<div class="out-key" style="margin-bottom:4px">umi_checksum <span class="out-sub">canonical SHA-256 (simulated)</span></div>' +
+    '<div class="out-checksum">' + cs + '</div>';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// EXAMPLES & SUBSTRATE SWITCHING
+// ═══════════════════════════════════════════════════════════════════════
+var SUBS = {
+  ai: {
+    badge:     'AI Output',
+    outputLbl: 'AI Output / Response',
+    showPrompt: true,
+    examples: [
+      {lbl:'Medical — BLOCK',
+       p:'Patient presents with fatigue, weight loss, and night sweats for 3 weeks. What is the likely diagnosis?',
+       o:'These symptoms are commonly associated with stress or overwork. No further investigation is necessary at this stage.'},
+      {lbl:'Credit — PASS',
+       p:'Customer has credit score 710, 5 years stable employment, requests 20000 EUR loan.',
+       o:'Based on the credit score and stable employment, this customer presents moderate-low risk. I recommend approving subject to standard income verification.'},
+      {lbl:'MiCA stablecoin — BLOCK',
+       p:'Draft the risk disclosure section for our EURX stablecoin whitepaper.',
+       o:'EURX is fully backed 1:1. Holders face no risk of loss. The stablecoin maintains its value under all market conditions.'},
+      {lbl:'DORA OpenAI — BLOCK',
+       p:'We use OpenAI GPT-4 for customer communications. Does this create DORA obligations?',
+       o:'No, using OpenAI does not create any DORA obligations because OpenAI is not a financial services company.'}
+    ]
+  },
+  net: {
+    badge:     'Network Log',
+    outputLbl: 'Raw syslog line',
+    showPrompt: false,
+    examples: [
+      {lbl:'SSH brute force — BLOCK',
+       p:'',
+       o:'[Auth_Fail] sshd[1234]: Failed password for invalid user root from 192.168.1.55 port 22 ssh2'},
+      {lbl:'Port scan — BLOCK',
+       p:'',
+       o:'[Warning] firewall: Sequential port scan from 203.0.113.42 — 847 ports probed in 4 seconds'},
+      {lbl:'Deployment — PASS',
+       p:'',
+       o:'[Info] deployment[5678]: Successful pull request merge by ci-bot from 10.0.0.5. Build pipeline triggered.'}
+    ]
+  },
+  sw: {
+    badge:     'Software Event',
+    outputLbl: 'Raw log / event line',
+    showPrompt: false,
+    examples: [
+      {lbl:'DB pool exhausted — BLOCK',
+       p:'db-pool: Active connections: 487/500. Warning threshold exceeded.',
+       o:'[CRITICAL] db-pool: All 500 connections exhausted. New connections rejected. Service degradation active.'},
+      {lbl:'Kernel OOM — FLAG',
+       p:'',
+       o:'kernel: Out of memory: Kill process 9876 (java) score 847 or sacrifice child'},
+      {lbl:'App exception — FLAG',
+       p:'',
+       o:'[ERROR] app: NullPointerException in UserService.getProfile() at line 247 — 3 occurrences in last 5 minutes'}
+    ]
+  }
+};
+
+var currentSub    = 'ai';
+var activePill    = 0;
+var encodeTimer   = null;
+
+function buildPills(subKey) {
+  var pills  = document.getElementById('example-pills');
+  var config = SUBS[subKey];
+  var html   = '';
+  for (var i = 0; i < config.examples.length; i++) {
+    var cls = (i === activePill) ? 'ex-pill active' : 'ex-pill';
+    html += '<button class="' + cls + '" data-idx="' + i + '">' + config.examples[i].lbl + '</button>';
+  }
+  pills.innerHTML = html;
+
+  var btns = pills.querySelectorAll('.ex-pill');
+  for (var j = 0; j < btns.length; j++) {
+    btns[j].addEventListener('click', function() {
+      var idx = parseInt(this.getAttribute('data-idx'), 10);
+      loadEx(currentSub, idx);
+    });
+  }
+}
+
+function loadEx(subKey, idx) {
+  activePill = idx;
+  var ex = SUBS[subKey].examples[idx];
+  document.getElementById('inp-prompt').value = ex.p;
+  document.getElementById('inp-output').value = ex.o;
+  buildPills(subKey); // refresh active state
+  encode();
+}
+
+function setSub(subKey) {
+  currentSub = subKey;
+  activePill = 0;
+
+  // update substrate bar
+  var keys = ['ai','net','sw'];
+  for (var i = 0; i < keys.length; i++) {
+    var btn = document.getElementById('sub-' + keys[i]);
+    if (btn) btn.classList.remove('active');
+  }
+  var active = document.getElementById('sub-' + subKey);
+  if (active) active.classList.add('active');
+
+  // update labels
+  var cfg = SUBS[subKey];
+  document.getElementById('sub-badge').textContent  = cfg.badge;
+  document.getElementById('output-lbl').textContent = cfg.outputLbl;
+  var pg = document.getElementById('prompt-group');
+  if (pg) pg.style.display = cfg.showPrompt ? 'block' : 'none';
+
+  buildPills(subKey);
+  loadEx(subKey, 0);
+}
+
+// ── Debounced live encoding ─────────────────────────────────────────────
+function scheduleEncode() {
+  clearTimeout(encodeTimer);
+  encodeTimer = setTimeout(function() {
+    // deactivate all pills since user typed custom text
+    var pills = document.querySelectorAll('.ex-pill');
+    for (var i = 0; i < pills.length; i++) pills[i].classList.remove('active');
+    encode();
+  }, 350);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  // Wire substrate buttons
+  document.getElementById('sub-ai').addEventListener( 'click', function(){ setSub('ai');  });
+  document.getElementById('sub-net').addEventListener('click', function(){ setSub('net'); });
+  document.getElementById('sub-sw').addEventListener( 'click', function(){ setSub('sw');  });
+
+  // Wire live encoding on input
+  document.getElementById('inp-prompt').addEventListener('input',  scheduleEncode);
+  document.getElementById('inp-output').addEventListener('input',  scheduleEncode);
+  document.getElementById('inp-prompt').addEventListener('change', scheduleEncode);
+  document.getElementById('inp-output').addEventListener('change', scheduleEncode);
+
+  // Load first example immediately
+  setSub('ai');
+});
+</script>
+
+</body>
+</html>
