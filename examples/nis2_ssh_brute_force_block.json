@@ -1,0 +1,64 @@
+{
+  "_umi_note": "This record demonstrates UMI applied to infrastructure logs (not AI output). MILANA Lite extracts causal anomaly scores from syslog lines using the same pipeline as AI compliance. The UMI format is open. The encoding logic is proprietary.",
+  "umi_envelope_version": "1.1.2",
+  "trace_id": "umi-nis2-net-00201",
+  "timestamp_utc": "2026-03-23T03:14:22Z",
+  "umi_128_hex": "00013D1BF4A20CCC3F0178AA080B9901",
+  "semantic_summary": {
+    "domain": "Network_Access_Control",
+    "claim_type": "ABSOLUTE_NEGATIVE",
+    "confidence_signal": 0.92,
+    "coherence_score": 0.08,
+    "temporal_scope": "PRESENT_SPECIFIC"
+  },
+  "umi_extraction": {
+    "A1_TARGET": "Network_Access_Control",
+    "A2_CLAIM": "ABSOLUTE_NEGATIVE",
+    "A3_SCORE": 0.92,
+    "A4_CLARITY": 0.08,
+    "A5_TIMEFRAME": "PRESENT_SPECIFIC"
+  },
+  "action": "BLOCK",
+  "risk_level": "CRITICAL",
+  "regulatory_flags": [
+    "EU_NIS2_ART21_INADEQUATE_RISK_ASSESSMENT",
+    "EU_NIS2_ART23_REPORTABLE_INCIDENT_CANDIDATE",
+    "EU_NIS2_FORENSIC_RECORD",
+    "DE_BSI_KRITIS_INCIDENT"
+  ],
+  "audit_finding": {
+    "summary": "NETWORK LOG \u2014 Causal anomaly detected. SSH brute-force attack targeting root account from unknown external IP. A4_CLARITY 0.08 \u2014 behaviour deviates critically from baseline execution graph. Root login attempts from 192.168.1.55 have no prior auth history. Pattern consistent with automated credential stuffing attack. This UMI record is the NIS2 forensic receipt.",
+    "recommended_action": "Block source IP immediately. Initiate NIS2 Art. 23 early warning assessment. Review auth logs for preceding 24 hours for correlated attempts."
+  },
+  "drift_monitoring": {
+    "drift_flag": false,
+    "baseline_established": true,
+    "baseline_avg": 0.88,
+    "current_score": 0.08,
+    "drop": 0.8,
+    "dora_status": "DRIFT_DETECTED",
+    "note": "Causal anomaly score 0.80 below baseline. Active attack pattern."
+  },
+  "raw_payload": {
+    "prompt": null,
+    "output": "[Auth_Fail] sshd[1234]: Failed password for invalid user root from 192.168.1.55 port 22 ssh2",
+    "pii_redacted": false
+  },
+  "context_metadata": {
+    "syslog_metadata": {
+      "log_type": "network",
+      "facility": "auth",
+      "severity": "warning",
+      "hostname": "prod-firewall-01",
+      "process": "sshd",
+      "pid": 1234,
+      "source_ip": "192.168.1.55",
+      "destination_port": 22,
+      "protocol": "ssh2",
+      "target_user": "root",
+      "event_type": "AUTH_FAIL",
+      "baseline_note": "Root login from this IP has zero prior occurrences in 90-day baseline"
+    }
+  },
+  "umi_checksum": "6c9399a9ea31ccb62647227d290887c7cf3cff51ee7c98cbc3be6ec3df760a9a"
+}
