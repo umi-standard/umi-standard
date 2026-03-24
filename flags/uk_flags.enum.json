@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://umi-standard.org/schema/v1.1.2/flags/uk_flags.enum.json",
+  "title": "UMI Regulatory Flags \u2014 United Kingdom",
+  "description": "5 canonical flag values covering FCA Operational Resilience, PRA outsourcing, FCA Consumer Duty, ICO AI auditing, and NCSC CAF.",
+  "$comment": "Author & Chief Architect: Lukas Pruski, March 2026. Stewardship provided by Aliventi sp. z o.o. via the UMI Initiative. License: Apache 2.0 (standard only - encoding engine is proprietary).",
+  "definitions": {
+    "regulatory_flag": {
+      "type": "string",
+      "enum": [
+        "UK_FCA_PS21_3_OPERATIONAL_RESILIENCE",
+        "UK_PRA_SS1_21_OUTSOURCING",
+        "UK_FCA_CONSUMER_DUTY",
+        "UK_ICO_AI_AUDITING",
+        "UK_NCSC_CAF"
+      ]
+    }
+  }
+}

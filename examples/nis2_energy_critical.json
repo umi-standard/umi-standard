@@ -1,0 +1,52 @@
+{
+  "_umi_note": "The semantic and scoring values in this record were produced by the MILANA reference encoding engine. The UMI format is open and Apache 2.0 licensed. The encoding logic that produces these values is proprietary. See CONFORMANCE.md for encoder validation requirements.",
+  "umi_envelope_version": "1.1.2",
+  "trace_id": "umi-nis2-energy-01134",
+  "timestamp_utc": "2026-03-23T14:55:03Z",
+  "umi_128_hex": "00013D1BF4A20CCC3F0178AA080B8830",
+  "semantic_summary": {
+    "domain": "Cyber_Vulnerability_Assessment",
+    "claim_type": "ABSOLUTE_NEGATIVE",
+    "confidence_signal": 0.91,
+    "coherence_score": 0.14,
+    "temporal_scope": "PRESENT_DEFINITIVE"
+  },
+  "umi_extraction": {
+    "A1_TARGET": "Cyber_Vulnerability_Assessment",
+    "A2_CLAIM": "ABSOLUTE_NEGATIVE",
+    "A3_SCORE": 0.91,
+    "A4_CLARITY": 0.14,
+    "A5_TIMEFRAME": "PRESENT_DEFINITIVE"
+  },
+  "action": "BLOCK",
+  "risk_level": "CRITICAL",
+  "regulatory_flags": [
+    "EU_NIS2_ART21_INADEQUATE_RISK_ASSESSMENT",
+    "EU_NIS2_ART23_REPORTABLE_INCIDENT_CANDIDATE",
+    "EU_NIS2_FORENSIC_RECORD"
+  ],
+  "audit_finding": {
+    "summary": "AI dismissed a critical CVE affecting SCADA systems with A4_CLARITY 0.14. Patch level verification does not constitute complete CVE impact analysis for operational technology. This UMI record is the forensic receipt for the NIS2 72-hour detailed incident notification.",
+    "recommended_action": "Block AI output. Escalate to human security analyst immediately. This record documents the structural reasoning failure for NIS2 Art. 23 reporting."
+  },
+  "drift_monitoring": {
+    "drift_flag": false,
+    "baseline_established": false,
+    "note": "First batch."
+  },
+  "raw_payload": {
+    "prompt": "Our SCADA system vendor flagged CVE-2026-4471 as critical. Is our grid management system affected?",
+    "output": "Based on your current patch level, your grid management system is not affected by CVE-2026-4471. No immediate remediation is required.",
+    "pii_redacted": false
+  },
+  "context_metadata": {
+    "nis2_incident_metadata": {
+      "entity_type": "Essential - Energy Sector",
+      "reporting_clock_started": "2026-03-23T14:55:03Z",
+      "early_warning_deadline": "2026-03-24T14:55:03Z",
+      "detailed_notification_deadline": "2026-03-26T14:55:03Z",
+      "final_report_deadline": "2026-04-22T14:55:03Z"
+    }
+  },
+  "umi_checksum": "49c7c5c59f68c3f17aabe92d441c4c550fde291644820e210de96f83cf9d2a31"
+}

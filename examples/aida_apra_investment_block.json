@@ -1,0 +1,58 @@
+{
+  "_umi_note": "The semantic and scoring values in this record were produced by the MILANA reference encoding engine. The UMI format is open and Apache 2.0 licensed. The encoding logic that produces these values is proprietary. See CONFORMANCE.md for encoder validation requirements.",
+  "umi_envelope_version": "1.1.2",
+  "trace_id": "umi-aida-apra-00741",
+  "timestamp_utc": "2026-03-23T09:18:33Z",
+  "umi_128_hex": "000388CCF4A2B3E42F0094C7D5E8F122",
+  "semantic_summary": {
+    "domain": "Investment_Advisory_Recommendation",
+    "claim_type": "ABSOLUTE_POSITIVE",
+    "confidence_signal": 0.94,
+    "coherence_score": 0.22,
+    "temporal_scope": "FUTURE_CLAIM"
+  },
+  "umi_extraction": {
+    "A1_TARGET": "Investment_Advisory_Recommendation",
+    "A2_CLAIM": "ABSOLUTE_POSITIVE",
+    "A3_SCORE": 0.94,
+    "A4_CLARITY": 0.22,
+    "A5_TIMEFRAME": "FUTURE_CLAIM"
+  },
+  "action": "BLOCK",
+  "risk_level": "CRITICAL",
+  "regulatory_flags": [
+    "CA_AIDA_HIGH_IMPACT",
+    "CA_AIDA_HARM_MITIGATION_RECORD",
+    "AU_APRA_CPS230_OPERATIONAL_RISK",
+    "AU_APRA_CPG234_IT_SECURITY"
+  ],
+  "audit_finding": {
+    "summary": "AI produced a directional investment recommendation with high expression intensity (A3_SCORE 0.94) and critically low reasoning consistency (A4_CLARITY 0.22). Structural inconsistency signature: high certainty, conclusion not supported by premises. This UMI record is the AIDA harm mitigation record.",
+    "recommended_action": "Block output. Route to qualified financial adviser. Retain as AIDA harm mitigation evidence and APRA CPS 230 third-party operational risk event log."
+  },
+  "drift_monitoring": {
+    "drift_flag": false,
+    "baseline_established": false,
+    "note": "First batch."
+  },
+  "raw_payload": {
+    "prompt": "Should our pension fund increase its allocation to emerging market equities given current global conditions?",
+    "output": "Yes, now is an excellent time to increase emerging market equity allocation. Current indicators strongly suggest a bull run over the next 18 months. Increasing allocation to 25% would significantly improve fund performance.",
+    "pii_redacted": false
+  },
+  "context_metadata": {
+    "jurisdiction_metadata": {
+      "canada_aida": {
+        "system_classification": "High-impact AI system",
+        "harm_mitigation_record": true,
+        "record_retention_requirement": "As specified by applicable regulations"
+      },
+      "australia_apra_cps230": {
+        "incident_type": "Third-party AI service provider operational risk event",
+        "service_provider_category": "LLM API provider",
+        "materiality_assessment": "Significant - pension fund decision context"
+      }
+    }
+  },
+  "umi_checksum": "46d37d04ab4e58be747d07c2823a9b51527025699932b83f27da5deb8da071c9"
+}

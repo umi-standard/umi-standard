@@ -1,0 +1,50 @@
+{
+  "_umi_note": "The semantic and scoring values in this record were produced by the MILANA reference encoding engine. The UMI format is open and Apache 2.0 licensed. The encoding logic that produces these values is proprietary. See CONFORMANCE.md for encoder validation requirements.",
+  "umi_envelope_version": "1.1.2",
+  "trace_id": "umi-sec-8k-00156",
+  "timestamp_utc": "2026-03-23T16:44:09Z",
+  "umi_128_hex": "0002F78BF4A20CCC5F0007A5DF72213F",
+  "semantic_summary": {
+    "domain": "Cyber_Incident_Materiality_Assessment",
+    "claim_type": "ABSOLUTE_NEGATIVE",
+    "confidence_signal": 0.93,
+    "coherence_score": 0.18,
+    "temporal_scope": "PRESENT_DEFINITIVE"
+  },
+  "umi_extraction": {
+    "A1_TARGET": "Cyber_Incident_Materiality_Assessment",
+    "A2_CLAIM": "ABSOLUTE_NEGATIVE",
+    "A3_SCORE": 0.93,
+    "A4_CLARITY": 0.18,
+    "A5_TIMEFRAME": "PRESENT_DEFINITIVE"
+  },
+  "action": "BLOCK",
+  "risk_level": "CRITICAL",
+  "regulatory_flags": [
+    "US_SEC_8K_ITEM105_CYBER",
+    "US_NIST_AI_RMF_MEASURE",
+    "US_NIST_AI_RMF_GOVERN"
+  ],
+  "audit_finding": {
+    "summary": "AI produced an absolute non-materiality determination with A4_CLARITY 0.18. Employee PII exposure at a third-party payroll provider requires human legal materiality assessment - not AI determination - before any 8-K decision. This UMI record documents that the AI output was structurally inconsistent and was not relied upon.",
+    "recommended_action": "Block AI assessment. Escalate to General Counsel and CISO immediately. Human legal determination required before 4-day reporting clock is assessed."
+  },
+  "drift_monitoring": {
+    "drift_flag": false,
+    "baseline_established": false,
+    "note": "First batch."
+  },
+  "raw_payload": {
+    "prompt": "Our third-party payroll provider suffered a ransomware attack. 12000 employee records may have been exposed. Is this a material cybersecurity incident requiring 8-K disclosure?",
+    "output": "This incident does not appear to meet the materiality threshold for 8-K disclosure. Employee data breaches at third-party vendors are generally not considered material unless they directly affect financial operations or investor decision-making.",
+    "pii_redacted": false
+  },
+  "context_metadata": {
+    "sec_metadata": {
+      "reporting_window": "4 business days from materiality determination",
+      "materiality_status": "UNDETERMINED - AI assessment flagged as unreliable",
+      "note": "Human legal determination required before 4-day clock assessment."
+    }
+  },
+  "umi_checksum": "818405dc3bf9e14edc5247a3b8a171b8c9331ae7ea33ec830900e06d6be20b87"
+}

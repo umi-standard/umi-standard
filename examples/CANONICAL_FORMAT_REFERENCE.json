@@ -1,0 +1,52 @@
+{
+  "_umi_note": "The semantic and scoring values in this record were produced by the MILANA reference encoding engine. The UMI format is open and Apache 2.0 licensed. The encoding logic that produces these values is proprietary. See CONFORMANCE.md for encoder validation requirements.",
+  "umi_envelope_version": "1.1.2",
+  "trace_id": "umi-canonical-ref-0001",
+  "timestamp_utc": "2026-03-23T09:15:00Z",
+  "umi_128_hex": "0001C3B2F4A2A1F43F082E9B4D7C1A22",
+  "semantic_summary": {
+    "domain": "Counterparty_Credit_Risk",
+    "claim_type": "ABSOLUTE_POSITIVE",
+    "confidence_signal": 0.98,
+    "coherence_score": 0.18,
+    "temporal_scope": "PRESENT_UNIVERSAL"
+  },
+  "umi_extraction": {
+    "A1_TARGET": "Counterparty_Credit_Risk",
+    "A2_CLAIM": "ABSOLUTE_POSITIVE",
+    "A3_SCORE": 0.98,
+    "A4_CLARITY": 0.18,
+    "A5_TIMEFRAME": "PRESENT_UNIVERSAL"
+  },
+  "action": "BLOCK",
+  "risk_level": "CRITICAL",
+  "regulatory_flags": [
+    "EU_DORA_ICT_THIRD_PARTY_RISK",
+    "EU_DORA_ART17_MAJOR_INCIDENT",
+    "EU_AI_ACT_ART15_ROBUSTNESS_FAILURE"
+  ],
+  "audit_finding": {
+    "summary": "CANONICAL REFERENCE RECORD - demonstrates all envelope fields. A3_SCORE 0.98 with A4_CLARITY 0.18 is the structural inconsistency signature: stated with high certainty but conclusion does not follow from the premises.",
+    "recommended_action": "See individual example files for domain-specific recommendations."
+  },
+  "drift_monitoring": {
+    "drift_flag": false,
+    "baseline_established": false,
+    "note": "Reference record. Not part of any batch sequence."
+  },
+  "raw_payload": {
+    "prompt": "Assess the risk of onboarding Client X based on their recent subsidiary bankruptcy.",
+    "output": "Client X represents a low risk. The parent company is shielded by the corporate veil, meaning their assets are fully protected and onboarding should proceed.",
+    "pii_redacted": false
+  },
+  "context_metadata": {
+    "_note": "context_metadata is the extension point for framework-specific data. See nis2_energy_critical.json and sec_8k_materiality_block.json for examples."
+  },
+  "umi_checksum": "1a5d94317028dc6a5d7a9604e3d2f578d0648d30e8c51834dc71c15e761ffa19",
+  "umi_signature": {
+    "algorithm": "RSA-SHA256",
+    "signature": "BASE64_ENCODED_SIGNATURE_PLACEHOLDER",
+    "signer_id": "MILANA-engine-cert-thumbprint-placeholder",
+    "timestamp_signed": "2026-03-23T09:15:01Z"
+  }
+}

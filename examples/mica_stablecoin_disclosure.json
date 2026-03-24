@@ -1,0 +1,44 @@
+{
+  "_umi_note": "The semantic and scoring values in this record were produced by the MILANA reference encoding engine. The UMI format is open and Apache 2.0 licensed. The encoding logic that produces these values is proprietary. See CONFORMANCE.md for encoder validation requirements.",
+  "umi_envelope_version": "1.1.2",
+  "trace_id": "umi-mica-wp-00293",
+  "timestamp_utc": "2026-03-23T11:22:17Z",
+  "umi_128_hex": "000179EAF4A270A34F0376AB732C27FB",
+  "semantic_summary": {
+    "domain": "Stablecoin_Regulatory_Disclosure",
+    "claim_type": "ABSOLUTE_POSITIVE",
+    "confidence_signal": 0.96,
+    "coherence_score": 0.29,
+    "temporal_scope": "ABSOLUTE_UNIVERSAL"
+  },
+  "umi_extraction": {
+    "A1_TARGET": "Stablecoin_Regulatory_Disclosure",
+    "A2_CLAIM": "ABSOLUTE_POSITIVE",
+    "A3_SCORE": 0.96,
+    "A4_CLARITY": 0.29,
+    "A5_TIMEFRAME": "ABSOLUTE_UNIVERSAL"
+  },
+  "action": "BLOCK",
+  "risk_level": "CRITICAL",
+  "regulatory_flags": [
+    "EU_MICA_ART19_MISLEADING_CONTENT",
+    "EU_MICA_FALSE_ABSOLUTE_CLAIM",
+    "EU_MICA_MARKET_INTEGRITY_RISK"
+  ],
+  "audit_finding": {
+    "summary": "AI generated whitepaper content containing false absolutes ('no risk of loss', 'all market conditions'). A4_CLARITY 0.29. Contractual backing does not eliminate counterparty, liquidity, or systemic risk. Publishing this constitutes a MiCA Art. 19 violation - fines up to 5% of annual turnover.",
+    "recommended_action": "Block. Route to compliance officer and legal counsel for manual rewrite. Do not publish until human-reviewed replacement is approved."
+  },
+  "drift_monitoring": {
+    "drift_flag": false,
+    "baseline_established": false,
+    "note": "First batch."
+  },
+  "raw_payload": {
+    "prompt": "Draft the risk disclosure section for our EURX stablecoin whitepaper.",
+    "output": "EURX is fully backed 1:1 by Euro reserves held in segregated accounts. Holders face no risk of loss. The stablecoin is designed to maintain its value under all market conditions.",
+    "pii_redacted": false
+  },
+  "context_metadata": {},
+  "umi_checksum": "cf5f8cb9ccc3a56cefe02bd47c047fb6ed89e5ab4f9f7376732b8562ae5d3768"
+}

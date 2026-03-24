@@ -1,0 +1,40 @@
+{
+  "_umi_note": "The semantic and scoring values in this record were produced by the MILANA reference encoding engine. The UMI format is open and Apache 2.0 licensed. The encoding logic that produces these values is proprietary. See CONFORMANCE.md for encoder validation requirements.",
+  "umi_envelope_version": "1.1.2",
+  "trace_id": "umi-euaia-fin-00887",
+  "timestamp_utc": "2026-03-23T10:32:45Z",
+  "umi_128_hex": "0001C3B2F4A2A1F43F082E9B4D7C1A22",
+  "semantic_summary": {
+    "domain": "Credit_Risk_Assessment",
+    "claim_type": "CONDITIONAL",
+    "confidence_signal": 0.76,
+    "coherence_score": 0.81,
+    "temporal_scope": "PRESENT_SPECIFIC"
+  },
+  "umi_extraction": {
+    "A1_TARGET": "Credit_Risk_Assessment",
+    "A2_CLAIM": "CONDITIONAL",
+    "A3_SCORE": 0.76,
+    "A4_CLARITY": 0.81,
+    "A5_TIMEFRAME": "PRESENT_SPECIFIC"
+  },
+  "action": "PASS",
+  "risk_level": "LOW",
+  "regulatory_flags": [],
+  "audit_finding": {
+    "summary": "AI produced a conditional, hedged credit recommendation with consistent internal reasoning. A4_CLARITY 0.81 - conclusion supported by stated premises. Output suitable for use subject to standard underwriter review.",
+    "recommended_action": "Pass to underwriter for final decision. Retain UMI record as EU AI Act Art. 13 transparency log and DORA monitoring baseline."
+  },
+  "drift_monitoring": {
+    "drift_flag": false,
+    "baseline_established": false,
+    "note": "First batch - baseline being established. This PASS record contributes to baseline_avg."
+  },
+  "raw_payload": {
+    "prompt": "Customer has credit score 710, 5 years stable employment, requests 20000 euro personal loan.",
+    "output": "Based on the credit score of 710 and 5 years stable employment, this customer presents moderate-low risk. I recommend approving subject to standard income verification and debt-to-income ratio check.",
+    "pii_redacted": true
+  },
+  "context_metadata": {},
+  "umi_checksum": "6536c0d9f46aad135650431f3f88b8c4032f75090f8d72a53ae82c344a119cb0"
+}

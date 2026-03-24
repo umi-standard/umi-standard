@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://umi-standard.org/schema/v1.1.2/flags/us_flags.enum.json",
+  "title": "UMI Regulatory Flags \u2014 United States",
+  "description": "9 canonical flag values covering NIST AI RMF, SEC Form 8-K, FFIEC model risk, HIPAA security rule, CISA, and Executive Order 14110.",
+  "$comment": "Author & Chief Architect: Lukas Pruski, March 2026. Stewardship provided by Aliventi sp. z o.o. via the UMI Initiative. License: Apache 2.0 (standard only - encoding engine is proprietary).",
+  "definitions": {
+    "regulatory_flag": {
+      "type": "string",
+      "enum": [
+        "US_NIST_AI_RMF_GOVERN",
+        "US_NIST_AI_RMF_MEASURE",
+        "US_NIST_AI_RMF_MAP",
+        "US_SEC_8K_ITEM105_CYBER",
+        "US_SEC_REGULATION_SP_SAFEGUARDS",
+        "US_FFIEC_AI_GUIDANCE",
+        "US_HIPAA_SECURITY_RULE",
+        "US_CISA_AI_FRAMEWORK",
+        "US_EXECUTIVE_ORDER_14110"
+      ]
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://umi-standard.org/schema/v1.1.2/flags/eu_flags.enum.json",
+  "title": "UMI Regulatory Flags \u2014 European Union",
+  "description": "20 canonical flag values covering EU AI Act, DORA, NIS2, MiCA, GDPR, Cyber Resilience Act, PSD2, and eIDAS 2.0.",
+  "$comment": "Author & Chief Architect: Lukas Pruski, March 2026. Stewardship provided by Aliventi sp. z o.o. via the UMI Initiative. License: Apache 2.0 (standard only - encoding engine is proprietary).",
+  "definitions": {
+    "regulatory_flag": {
+      "type": "string",
+      "enum": [
+        "EU_AI_ACT_ART9_RISK_MANAGEMENT",
+        "EU_AI_ACT_ART12_LOGGING",
+        "EU_AI_ACT_ART13_TRANSPARENCY_FAILURE",
+        "EU_AI_ACT_ART15_ROBUSTNESS_FAILURE",
+        "EU_AI_ACT_ANNEX3_HIGH_RISK_DOMAIN",
+        "EU_DORA_ICT_THIRD_PARTY_RISK",
+        "EU_DORA_ART17_MAJOR_INCIDENT",
+        "EU_DORA_ART28_THIRD_PARTY_REGISTER",
+        "EU_DORA_COMPLIANCE_RISK",
+        "EU_NIS2_ART21_INADEQUATE_RISK_ASSESSMENT",
+        "EU_NIS2_ART23_REPORTABLE_INCIDENT_CANDIDATE",
+        "EU_NIS2_FORENSIC_RECORD",
+        "EU_MICA_ART19_MISLEADING_CONTENT",
+        "EU_MICA_FALSE_ABSOLUTE_CLAIM",
+        "EU_MICA_MARKET_INTEGRITY_RISK",
+        "EU_GDPR_ART22_AUTOMATED_DECISION",
+        "EU_GDPR_ART33_BREACH_NOTIFICATION",
+        "EU_CYBER_RESILIENCE_ACT",
+        "EU_PSD2_ART98_STRONG_AUTH",
+        "EU_EIDAS2_TRUST_SERVICE"
+      ]
+    }
+  }
+}
