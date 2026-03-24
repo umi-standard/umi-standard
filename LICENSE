@@ -1,3 +1,20 @@
+Copyright 2026 Lukas Alexander Pruski
+Stewardship provided by Aliventi via the UMI Initiative
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing
+permissions and limitations under the License.
+
+-------------------------------------------------------------------------------
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -105,24 +122,23 @@
 
    END OF TERMS AND CONDITIONS
 
-   Copyright 2026 The UMI Initiative
-   Originally authored by Lukas Pruski
-   Stewardship provided by Aliventi sp. z o.o.
+-------------------------------------------------------------------------------
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+PROPRIETARY CARVE-OUT
 
-       http://www.apache.org/licenses/LICENSE-2.0
+The following components are proprietary works authored by and owned by
+Lukas Alexander Pruski. All rights reserved. These works may be assigned
+to a designated commercial entity at the author's discretion.
 
-   IMPORTANT — PROPRIETARY CARVE-OUT:
-   The UMI schema, regulatory flag enumeration, and conformance suite
-   are licensed under Apache 2.0 as stated above.
+   - The MILANA encoding engine
+   - The AiQUS governance layer
+   - The VELANA governed record format
 
-   The MILANA encoding engine, the AiQUS governance layer, and the
-   VELANA governed record format are proprietary works authored by 
-   and owned by Lukas Alexander Pruski. All rights reserved. These
-   works may be assigned to a designated commercial entity at the
-   author's discretion. 
-   
-   Licensing enquiries: project_velana@aliventi.eu
+These proprietary components are NOT covered by the Apache License 2.0
+above. They are available via commercial agreement.
+
+Licensing enquiries: project_velana@aliventi.eu
+
+-------------------------------------------------------------------------------
+
+www.umi-standard.org — UMI Standard License — The UMI Initiative
