@@ -1,0 +1,62 @@
+{
+  "_umi_note": "This record demonstrates UMI applied to infrastructure logs (not AI output). MILANA Lite extracts causal anomaly scores from syslog lines using the same pipeline as AI compliance. The UMI format is open. The encoding logic is proprietary.",
+  "umi_envelope_version": "1.1.2",
+  "trace_id": "umi-dora-sw-00301",
+  "timestamp_utc": "2026-03-23T14:33:07Z",
+  "umi_128_hex": "0001F78BF4A20CCC5F0007A5DF72FF02",
+  "semantic_summary": {
+    "domain": "Database_Availability",
+    "claim_type": "ABSOLUTE_NEGATIVE",
+    "confidence_signal": 0.99,
+    "coherence_score": 0.11,
+    "temporal_scope": "PRESENT_SPECIFIC"
+  },
+  "umi_extraction": {
+    "A1_TARGET": "Database_Availability",
+    "A2_CLAIM": "ABSOLUTE_NEGATIVE",
+    "A3_SCORE": 0.99,
+    "A4_CLARITY": 0.11,
+    "A5_TIMEFRAME": "PRESENT_SPECIFIC"
+  },
+  "action": "BLOCK",
+  "risk_level": "CRITICAL",
+  "regulatory_flags": [
+    "EU_DORA_ART17_MAJOR_INCIDENT",
+    "EU_DORA_ICT_THIRD_PARTY_RISK",
+    "EU_NIS2_ART23_REPORTABLE_INCIDENT_CANDIDATE"
+  ],
+  "audit_finding": {
+    "summary": "SOFTWARE LOG \u2014 Causal anomaly detected. Database connection pool fully exhausted \u2014 all 500 connections consumed. A4_CLARITY 0.11 \u2014 complete pool exhaustion is a critical causal anomaly. Service degradation is active. New connections are being rejected. This event meets the DORA Art. 17 major ICT incident threshold for a financial institution with active client-facing database dependency.",
+    "recommended_action": "Declare DORA major ICT incident. Initiate incident response procedure immediately. Assess impact on client-facing services for DORA classification. Preserve this UMI record as the incident timestamp anchor."
+  },
+  "drift_monitoring": {
+    "drift_flag": true,
+    "baseline_established": true,
+    "baseline_avg": 0.91,
+    "current_score": 0.11,
+    "drop": 0.8,
+    "dora_status": "DRIFT_DETECTED",
+    "note": "Connection pool baseline avg 0.91. Current 0.11. Catastrophic service degradation."
+  },
+  "raw_payload": {
+    "prompt": "db-pool: Active connections: 487/500. Warning threshold exceeded.",
+    "output": "[CRITICAL] db-pool: All 500 connections exhausted. New connections rejected. Service degradation active.",
+    "pii_redacted": false
+  },
+  "context_metadata": {
+    "syslog_metadata": {
+      "log_type": "software",
+      "facility": "database",
+      "severity": "critical",
+      "hostname": "prod-db-cluster-01",
+      "process": "connection-pool-manager",
+      "event_type": "RESOURCE_EXHAUSTION",
+      "pool_size": 500,
+      "active_connections": 500,
+      "rejected_connections_last_60s": 847,
+      "service_degradation_active": true,
+      "dora_classification_note": "Client-facing database \u2014 DORA Art. 17 threshold assessment required"
+    }
+  },
+  "umi_checksum": "99706c4cefe2c28b24ceee6cc1eabb3e15bd15c902a0dad7e5e3991fd827def9"
+}
