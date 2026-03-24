@@ -1,0 +1,11 @@
+# Demo audit output files
+audit_results_demo_*.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# OS files
+.DS_Store
+Thumbs.db
